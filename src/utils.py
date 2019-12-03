@@ -2,7 +2,7 @@ import psycopg2 as pg
 import time
 
 conn = pg.connect(
-    database='fran',
+    database='postgres',
     user='postgres',
     password='postgres',
     host='localhost',
@@ -19,11 +19,11 @@ def create_db():
 def insert_proveedores():
     # create things
     cur = conn.cursor()
-    cur.execute("INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)", ["123456789", "FRAN", "la chana", 213122321, "fran@corre.es"])
+    cur.execute("INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)", ["123456789", "FRAN", "la chana", 213122321, " fran@corre.es"])
     conn.commit()
     cur.close()
 
-#create_db()
+create_db()
 insert_proveedores()
     
 conn.close()

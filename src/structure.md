@@ -9,3 +9,7 @@ Tiene que tener:
 - coches
 - alquileres
 
+### clientes
+
+un boton por cada funcionalidad
+
