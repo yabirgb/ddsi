@@ -27,8 +27,8 @@ def consultar_proveedores():
 
     cur = conn.cursor()
     cur.execute(
-    			"Select * from proveedores where cif=%s or nombre=%s",     					
-    			(CIF,nombre))
+        "Select * from proveedores where cif=%s or nombre=%s",
+    	(CIF,nombre))
     
     data = cur.fetchall()
 
@@ -36,3 +36,38 @@ def consultar_proveedores():
     print(data)
     cur.close()
     return render_template('proveedores_query.html', data=data)
+
+@proveedores.route("/crear", methods=["GET", "POST"])
+def crear_proveedor():
+
+    if request.method == "GET":
+        return render_template("crear_proveedor.html")
+    
+    nombre = request.form.get("nombre", type=str)
+    ubicacion = request.form.get("ubicacion", type=str)
+    telefono = request.form.get("telefono", type=int)
+    correo = request.form.get("correo", type=str)
+    CIF = request.form.get("cif", type=str)
+
+
+    # check that all the fields are fulfilled
+    if not all([nombre, ubicacion, telefono, correo, CIF]):
+        m = "Alguno de los campos no ha sido introducido correctamente"
+        back = "/proveedores/crear"
+        return render_template("error.html", message=m, back=back)
+
+    # insert in the db
+
+
+    sql = "INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
+    
+    cur = conn.cursor()
+    cur.execute(sql, (nombre, ubicacion,telefono,correo,CIF))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+@proveedores.route("/eliminar", methods=["POST"])
+def eliminar_proveedor():
+    pass
