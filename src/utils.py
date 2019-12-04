@@ -2,7 +2,7 @@ import psycopg2 as pg
 import time
 
 conn = pg.connect(
-    database='postgres',
+    database='ddsi',
     user='postgres',
     password='postgres',
     host='localhost',
