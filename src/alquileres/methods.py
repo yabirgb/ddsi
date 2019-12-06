@@ -10,35 +10,36 @@ conn = pg.connect(
     #port=5432
 )
 
-proveedores = Blueprint('proveedores', __name__,
-                        template_folder='../templates', url_prefix="/proveedores")
+alquileres = Blueprint('alquileres', __name__,
+                        template_folder='../templates', url_prefix="/alquileres")
 
-@proveedores.route('/consulta', methods=['GET','POST'])
-def consultar_proveedores():
+@alquileres.route('/consulta', methods=['GET','POST'])
+def consultar_alquileres():
 
     #print(request.form)
-    nombre = request.form.get('nombre', default='', type=str)
-    CIF = request.form.get('cif', default='', type=str)
+    DNI = request.form.get('DNI', default='', type=str)
+    IDcoche = request.form.get('IDcoche', default='', type=str)
+    fechaInicio = request.form.get('fechaInicio', default='', type=str)
 
-    print("data: ", nombre, CIF)
+    print("data: ", IDcoche, DNI, fechaInicio)
 
-    if nombre == '' and CIF == '' or request.method=='GET':
-        return render_template('proveedores_query.html', data=[])
+    if IDcoche == '' and DNI == '' and fechaInicio == '' or request.method=='GET':
+        return render_template('alquileres_query.html', data=[])
 
     cur = conn.cursor()
     cur.execute(
-        "Select * from proveedores where cif=%s or nombre=%s",
-    	(CIF,nombre))
+        "Select * from alquiler where DNI=%s and id_coche=%s",
+    	(DNI,IDcoche))
     
     data = cur.fetchall()
 
 
     print(data)
     cur.close()
-    return render_template('proveedores_query.html', data=data)
+    return render_template('alquileres_query.html', data=data)
 
-@proveedores.route("/crear", methods=["GET", "POST"])
-def crear_proveedor():
+@alquileres.route("/crear", methods=["GET", "POST"])
+def crear_alquiler():
 
     if request.method == "GET":
         return render_template("crear_proveedor.html")
@@ -53,7 +54,7 @@ def crear_proveedor():
     # check that all the fields are fulfilled
     if not all([nombre, ubicacion, telefono, correo, CIF]):
         m = "Alguno de los campos no ha sido introducido correctamente"
-        back = "/proveedores/crear"
+        back = "/alquiler/crear"
         return render_template("error.html", message=m, back=back)
 
     # insert in the db
@@ -68,6 +69,6 @@ def crear_proveedor():
     conn.close()
 
 
-@proveedores.route("/eliminar", methods=["POST"])
+@alquileres.route("/eliminar", methods=["POST"])
 def eliminar_proveedor():
     pass
