@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Alquiler de coches</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-</head>
-
-<body>
-
-  <nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand mb-0 h1">JAJAJA</span>
-  </nav>
+{% extends 'base.html' %}
+{% block content %}
 
   <div class="container-fluid">
     
@@ -22,20 +12,45 @@
       <label for="CIF">CIF</label>
       <input type="text" class="form-control" name="cif">
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Buscar</button>
   </form>
   
   </div>
-  
+  <br>
   {% if data %}
-  <div class="container-fluid">
-    <ul class="list-group">
-      {% for row in data %}
-        <li class="list-group-item">CIF: {{ row.0 }} - Nombre: {{ row.1 }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-</body>
+    <div class="container-fluid">
 
-</html> 
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">CIF</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Ubicacion</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Correo</th>
+            <th scope="col">Fecha de Inicio</th>
+            <th scope="col">Coches asociados</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+            <td>{{ row.2 }}</td>
+            <td>{{ row.3 }}</td>
+            <td>{{ row.4 }}</td>
+            <td>{{ row.5 }}</td>
+            <td></td>
+            <td><button type="button" class="btn btn-primary">Editar</button>
+              <button type="button" class="btn btn-danger">Eliminar</button></td>
+          </tr>
+      {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock content %}
