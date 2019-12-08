@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request
 conn = pg.connect(
     database='ddsi',
     user='postgres',
-    password='pass',
+    password='postgres',
     host='localhost',
     #port=5432
 )

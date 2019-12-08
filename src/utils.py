@@ -4,7 +4,7 @@ import time
 conn = pg.connect(
     database='ddsi',
     user='postgres',
-    password='postgres',
+    password='pass',
     host='localhost',
     #port=5432
 )
