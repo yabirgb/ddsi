@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alquiler de coches</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Clientes</span>
+  </nav>
+
+  <div class="container-fluid"> 
+    
+  <form action="{{ url_for('clientes.modificar_cliente_do') }}", method="post">
+
+    <div class="form-group">
+      <label for="dni">DNI cliente</label>
+      <input type="text" class="form-control" name="dni_nuevo" value="{{ dni_antiguo }}">
+    </div>
+
+    <div class="form-group">
+      <label for="nombre">Nombre y apellidos</label>
+      <input type="text" class="form-control" name="nombre_nuevo" value="{{ nombre_antiguo }}">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Telefono</label>
+      <input type="text" class="form-control" name="telefono_nuevo" value="{{ telefono_antiguo }}">
+    </div>
+
+    <input type="hidden" name="dni_antiguo" value="{{ dni_antiguo }}">
+    <input type="hidden" name="dni_antiguo" value="{{ nombre_antiguo }}">
+    <input type="hidden" name="dni_antiguo" value="{{ telefono_antiguo }}">
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Aceptar">
+  </form>
+  
+  </div>
+
+</body>
+
+</html> 

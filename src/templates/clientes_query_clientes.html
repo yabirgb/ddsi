@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alquiler de coches</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Clientes</span>
+  </nav>
+
+  <div class="container-fluid">
+    
+  <form action='/clientes/', method="post">
+
+    <div class="form-group">
+      <label for="dni">DNI cliente</label>
+      <input type="text" class="form-control" name="dni">
+    </div>
+
+    <div class="form-group">
+      <label for="nombre">Nombre y apellidos</label>
+      <input type="text" class="form-control" name="nombre">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Telefono</label>
+      <input type="text" class="form-control" name="telefono">
+    </div>
+
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Buscar">
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Mostrar todos">
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Crear nuevo">
+  </form>
+  
+  </div>
+
+  {% if mensaje %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+    {{ mensaje }}
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+      {{ error }}
+  </div>
+  {% elif data %}
+  <form id="eliminar" action='/clientes/eliminar', method="post"></form>
+  <form id="modificar" action='/clientes/modificar', method="post"></form>
+  <div class="container-fluid" style="padding-top: 30px">    
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">DNI</th> 
+            <th scope="col">Nombre</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Eliminar</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+            <tr>
+              <td>{{ row.0 }}</td>
+              <td>{{ row.1 }}</td>
+              <td>{{ row.2 }}</td>
+              <td>
+                  <input type="checkbox" form="eliminar" name="{{ loop.index0 }}">
+                  <input type="hidden" form="eliminar" name="{{ loop.index0 }}_dni" value="{{ row.0 }}">
+              </td>
+              <td>
+                  <form action="{{ url_for('clientes.modificar_cliente_preguntar') }}", method="post">
+                      <input type="submit" name="submit_button" value="Modificar">
+                      <input type="hidden" name="dni_antiguo" value="{{ row.0 }}">
+                      <input type="hidden" name="nombre_antiguo" value="{{ row.1 }}">
+                      <input type="hidden" name="telefono_antiguo" value="{{ row.2 }}">
+                  </form>
+              </td>
+              <td>
+                  <form action="{{ url_for('clientes.consultar_alquiler_cliente') }}", method="post">
+                    <input type="submit" name="submit_button" value="Consultar alquileres">
+                    <input type="hidden" name="dni_consultar_alquiler" value="{{ row.0 }}">
+                  </form>
+                </td>
+              <td>
+                  <form action="{{ url_for('clientes.consultar_pendientes_cliente') }}", method="post">
+                      <input type="submit" name="submit_button" value="Consultar pagos pendientes">
+                      <input type="hidden" name="dni_consultar_alquiler" value="{{ row.0 }}">
+                  </form>
+              </td>
+
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    <input type="submit" form="eliminar" class="btn btn-primary" name="delete_button" value="Eliminar selección">
+
+    <!--</form>-->
+  
+  </div>
+  {% endif %}
+
+</body>
+
+</html> 

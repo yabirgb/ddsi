@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alquiler de coches</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1">Clientes</span>
+  </nav>
+
+  <div class="container-fluid">
+    
+  <form action='/clientes/', method="post">
+
+    <div class="form-group">
+      <label for="dni">DNI cliente</label>
+      <input type="text" class="form-control" name="dni">
+    </div>
+
+    <div class="form-group">
+      <label for="nombre">Nombre y apellidos</label>
+      <input type="text" class="form-control" name="nombre">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Telefono</label>
+      <input type="text" class="form-control" name="telefono">
+    </div>
+
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Buscar">
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Mostrar todos">
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Crear nuevo">
+  </form>
+  
+  </div>
+
+  {% if mensaje %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+    {{ mensaje }}
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+      {{ error }}
+  </div>
+  {% elif data %}
+  <form id="eliminar" action='/clientes/eliminar', method="post"></form>
+  <form id="modificar" action='/clientes/modificar', method="post"></form>
+  <div class="container-fluid" style="padding-top: 30px">    
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">DNI</th> 
+            <th scope="col">Id. coche</th>
+            <th scope="col">Fecha inicio</th>
+            <th scope="col">Fecha fin</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Estado</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+            <tr>
+              <td>{{ row.0 }}</td>
+              <td>{{ row.1 }}</td>
+              <td>{{ row.2 }}</td>
+              <td>{{ row.3 }}</td>
+              <td>{{ row.4 }}</td>
+              <td>{{ row.5 }}</td>
+
+              
+              {% if row.5=='no_pagado' %}              
+              <td>
+                  <form action="{{ url_for('clientes.cobrar_alquiler_cliente') }}", method="post">
+                    <input type="submit" name="submit_button" value="Cobrar">
+                    <input type="hidden" name="dni_cobrar" value="{{ row.0 }}">
+                    <input type="hidden" name="idcoche_cobrar" value="{{ row.1 }}">
+                    <input type="hidden" name="fecha_cobrar" value="{{ row.2 }}">
+                  </form>
+              </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    <!--</form>-->
+  
+  </div>
+  {% endif %}
+
+</body>
+
+</html> 
