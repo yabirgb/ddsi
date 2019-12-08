@@ -1,6 +1,6 @@
 import psycopg2 as pg
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 
 conn = pg.connect(
     database='ddsi',
@@ -26,22 +26,23 @@ def consultar_proveedores():
         return render_template('proveedores_query.html', data=[])
 
     cur = conn.cursor()
-    cur.execute(
-        "Select * from proveedores where cif=%s or nombre=%s",
-    	(CIF,nombre))
+    try:
+        cur.execute(
+            "Select * from proveedores where cif=%s or nombre ILIKE %s",
+    	    (CIF,nombre))
     
-    data = cur.fetchall()
-
-
-    print(data)
-    cur.close()
-    return render_template('proveedores_query.html', data=data)
+        data = cur.fetchall()
+        cur.close()
+        return render_template('proveedores_query.html', data=data)
+    except:
+        cur.close()
+        return render_template('proveedores_query.html', errors=[])
 
 @proveedores.route("/crear", methods=["GET", "POST"])
 def crear_proveedor():
 
     if request.method == "GET":
-        return render_template("crear_proveedor.html")
+        return render_template("proveedores_crear.html")
     
     nombre = request.form.get("nombre", type=str)
     ubicacion = request.form.get("ubicacion", type=str)
@@ -62,12 +63,13 @@ def crear_proveedor():
     sql = "INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
     
     cur = conn.cursor()
-    cur.execute(sql, (nombre, ubicacion,telefono,correo,CIF))
+    cur.execute(sql, (CIF, nombre, ubicacion,telefono,correo))
     conn.commit()
     cur.close()
     conn.close()
 
-
+    return render_template("proveedores_crear.html", success=True)
+    
 @proveedores.route("/eliminar", methods=["POST"])
 def eliminar_proveedor():
     pass
