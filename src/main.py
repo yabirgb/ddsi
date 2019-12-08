@@ -1,13 +1,18 @@
 from flask import Flask
+from flask import Blueprint, render_template, request
+
 
 # from flask_api import status
 from proveedores.methods import proveedores
+from clientes.clientes import clientes
+from clientes. cobrar import cobrar
 
 app = Flask(__name__)
 
 # time.sleep(1)
 app.register_blueprint(proveedores)
-
+app.register_blueprint(clientes)
+app.register_blueprint(cobrar)
 
 @app.route("/")
 def main2():

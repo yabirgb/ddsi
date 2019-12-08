@@ -3,9 +3,9 @@ import psycopg2 as pg
 from flask import Blueprint, render_template, request
 
 conn = pg.connect(
-    database='fran',
+    database='ddsi',
     user='postgres',
-    password='postgres',
+    password='pass',
     host='localhost',
     #port=5432
 )
