@@ -16,14 +16,14 @@ def create_db():
         cur.execute(data)
         cur.close()
 
-def insert_proveedores():
-    # create things
-    cur = conn.cursor()
-    cur.execute("INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)", ["123456789", "FRAN", "la chana", 213122321, " fran@corre.es"])
-    conn.commit()
-    cur.close()
+def insert():
+    with open('sql/insert.sql','r') as f:
+        data = f.read()
+        cur = conn.cursor()
+        cur.execute(data)
+        cur.close()
 
 create_db()
-insert_proveedores()
-    
+insert()
+
 conn.close()
