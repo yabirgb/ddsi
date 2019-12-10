@@ -10,6 +10,9 @@ conn = pg.connect(
     #port=5432
 )
 
+coches = Blueprint('coches', __name__,
+                        template_folder='../templates', url_prefix="/coches")
+
 @coches.route("/", methods=["GET","POST"])
 def consultar_crear_coches():
 
