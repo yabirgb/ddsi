@@ -1,5 +1,5 @@
-DROP FUNCTION funcion1() CASCADE;
-CREATE OR REPLACE FUNCTION funcion1() RETURNS trigger AS $$
+DROP FUNCTION esAlquilerValido() CASCADE;
+CREATE OR REPLACE FUNCTION esAlquilerValido() RETURNS trigger AS $$
 DECLARE name   character varying(255);
 BEGIN
 	SELECT * INTO name FROM alquiler where (NEW.fecha_inicio<=fecha_inicio and fecha_inicio<=NEW.fecha_fin) or 
@@ -11,5 +11,5 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER alquilerValido BEFORE INSERT ON alquiler FOR EACH ROW EXECUTE PROCEDURE funcion1();
+CREATE TRIGGER alquilerValido BEFORE INSERT ON alquiler FOR EACH ROW EXECUTE PROCEDURE esAlquilerValido();
 
