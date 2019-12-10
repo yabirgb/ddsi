@@ -23,8 +23,8 @@ CREATE TABLE if not exists alquiler (
     estado VARCHAR(10) check (estado in ('pagado', 'no_pagado')),
     PRIMARY KEY (dni, id_coche, fecha_inicio),
 
-    foreign key (dni) references cliente(dni),
-    foreign key (id_coche) references coche(id_coche)
+    foreign key (dni) references cliente(dni) on delete cascade,
+    foreign key (id_coche) references coche(id_coche) on delete cascade
     
 );
 
@@ -46,8 +46,8 @@ create table if not exists solicitud(
        fecha_entrega date,
        punto_recogida varchar(64) not null,
        
-       foreign key (id_coche) references coche(id_coche),
-       foreign key (cif) references proveedores(cif)
+       foreign key (id_coche) references coche(id_coche) on delete cascade,
+       foreign key (cif) references proveedores(cif) on delete cascade
        
 );
 
