@@ -9,7 +9,12 @@ INSERT INTO coche(id_coche, numero_bastidor, matricula, marca, modelo, color, es
 
 
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678A', '1', '1/1/2000', '1/1/2000', '2', 'pagado') ON CONFLICT DO NOTHING;
-INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678A', '2', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678B', '1', '1/1/2000', '1/1/2000', '2', 'pagado') ON CONFLICT DO NOTHING;
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678C', '2', '1/1/2000', '1/1/2000', '2', 'pagado') ON CONFLICT DO NOTHING;
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678D', '2', '1/1/2000', '1/1/2000', '2', 'pagado') ON CONFLICT DO NOTHING;
+
+INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678A', '2', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
+INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678A', '3', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
+INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678B', '1', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
+INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678B', '2', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
+INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678C', '1', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
