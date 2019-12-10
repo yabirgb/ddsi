@@ -1,0 +1,8 @@
+Cuando ejecutemos creation.sql hay que hacerlo desde el usuario postgres.
+
+
+COSAS QUE HAY QUE HACER:
+1. Poner todas las interfaces igual.
+2. Hacer un script para crear la base de datos e insertar tuplas.
+3. Hacer la página de inicio y poner dos botones: uno para crear la db y otra para insertar tuplas
+4. Poner muchas sentencias de inserción de tuplas.
