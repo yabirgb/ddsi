@@ -1,1 +1,5 @@
 *~
+bin/*
+share/*
+lib/*
+include/*

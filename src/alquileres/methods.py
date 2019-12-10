@@ -69,6 +69,14 @@ def crear_alquiler():
     conn.close()
 
 
-@alquileres.route("/eliminar", methods=["POST"])
-def eliminar_proveedor():
+@alquileres.route("/modificar", methods=["GET", "POST"])
+def modificar_alquiler():
+    pass
+
+@alquileres.route("/disponibilidad", methods=["GET", "POST"])
+def consultar_disponibilidad():
+    pass
+
+@alquileres.route("/devolver", methods=["GET", "POST"])
+def devolver_coche():
     pass
