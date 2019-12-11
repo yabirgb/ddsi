@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <div class="container-fluid">
+    
+  <form action='/coches/notificar_averia/{{id_coche}}/', method="post">
+    <div class="form-group">
+      <label for="averia">Nueva avería</label>
+      <input type="text" class="form-control" name="averia">
+    </div>
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Guardar nueva avería">
+  </form>
+  
+  </div>
+
+{% endblock content %}

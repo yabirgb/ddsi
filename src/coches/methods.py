@@ -28,8 +28,8 @@ def consultar_coche():
         cur.close()
         return render_template('coches_query.html', data=data)
 
-    else:
-        """consulta = "SELECT * FROM coche WHERE"
+    elif request.form['submit_button'] == 'Consultar coche':
+        consulta = "SELECT * FROM coche WHERE"
         atributos = ("id_coche","numero_bastidor","matricula","marca","modelo","color")
         parametros = []
         for i in range(6):
@@ -42,162 +42,130 @@ def consultar_coche():
 
         parametros = tuple(parametros)
 
+        if parametros == ():
+            return render_template('coches_query.html', data=[])
 
-        if request.form['submit_button'] == 'Consultar coche': 
-
-            if parametros == ():
-                return render_template('coches_query.html', data=[])
-
-            cur = conn.cursor()
-            cur.execute(consulta,parametros)
-            data = cur.fetchall()
-            cur.close()
-
-            return render_template('coches_query.html', data=data)
-"""
-        
-        marca = request.form.get("marca", type=str)
-        modelo = request.form.get("modelo", type=str)
-        color = request.form.get("color", type=str)
-
-
-        # check that all the fields are fulfilled
-        if not all([marca, modelo, color]):
-            msg = "Alguno de los campos no ha sido introducido correctamente"
-            back = "/coches"
-            return render_template("error.html", message=msg, back=back)
-
-        # insert in the db
-        sql = "INSERT INTO coche(marca, modelo, color) VALUES (%s,%s,%s)"
-        
         cur = conn.cursor()
-        cur.execute(sql, (marca, modelo, color))
-        conn.commit()
+        cur.execute(consulta,parametros)
+        data = cur.fetchall()
         cur.close()
-        conn.close()
 
-        return render_template("coches_query.html", success=True)
+        return render_template('coches_query.html', data=data)
+
 
 
 
 
     
-@coches.route("/eliminar", methods=["POST"])
+@coches.route("/eliminar/", methods=["POST"])
 def eliminar_coche():
 
     cur = conn.cursor()
-    cur.execute("select count(*) from cliente")
+    cur.execute("SELECT COUNT(*) FROM coche")
     num_tuplas = cur.fetchall()[0][0]
 
-            
+    msg = "No se ha eliminado ningún coche"
     for i in range(0,num_tuplas):
         eliminar = request.form.get(str(i), default='')
-        dni = request.form.get(str(i)+'_id_coche', default='')
+        id_coche = request.form.get(str(i)+'_id_coche', default='')
 
         if eliminar == 'on':
-            cur.execute("delete from coche where id_coche=%s",(dni,))
+            cur.execute("DELETE FROM coche WHERE id_coche=%s",(id_coche,))
             conn.commit()
-            mensaje = "Coche(s) eliminados con éxito."
+            msg = "Coche(s) eliminados con éxito."
     
-    cur.close()
+#    cur.close()
 
-    return render_template('coches_query.html', data=[], mensaje=mensaje)
-
-
+    return render_template('coches_query.html', data=[], mensaje=msg)
 
 
 
 
 
 
-@coches.route("/notificar_averia", methods=['GET','POST'])
-def notificar_averia():
-	
-    id_coche = request.form.get('id_coche', default='', type=str)
-    averia = request.form.get('averia', default='', type=str)
+@coches.route("/notificar_averia/<id_coche>/", methods=['GET','POST'])
+def notificar_averia(id_coche):
 
     if request.method=='GET':
-        return render_template('coches_averia.html', data=[])
-    if id_coche == '' or averia == '':
-        msg = "Algunos de los campos está vacío"
-        back = "/coches/notificar_averia"
-        return render_template("error.html", message=msg, back=back)
+        return render_template('coches_averia.html', data=[], id_coche=id_coche)
 
-    cur = conn.cursor()
-    try:
-        cur.execute(
-            "SELECT estado FROM coches WHERE id_coche=%s",
-    	      (id_coche,))
+    if request.form['submit_button'] == 'Guardar nueva avería':
 
-        estado_previo = cur.fetchall()
+        averia = request.form.get('averia', default='', type=str)
+        if averia == '':
+            msg = "No se ha introducido ningun avería"
+            back = "/coches/"
+            return render_template("error.html", message=msg, back=back)
+
+        cur = conn.cursor()
+        cur.execute("SELECT estado FROM coche WHERE id_coche=%s", (id_coche,))
+        estado_previo = cur.fetchone()[0]
         cur.close()
         if estado_previo == None:
-            msg = "No se ha encontrado ningún coche con el identificador introducido"
-            back = "/coches/notificar_averia"
-            return render_template("error.html", message=msg, back=back)
-        elif estado_previo.find(averia) == -1:
+            estado_previo = ''
+
+        if estado_previo.find(averia) == -1:
             estado_nuevo = estado_previo + averia + '/'
             cur = conn.cursor()
             cur.execute(
-                "UPDATE coches SET estado = %s WHERE id_coche = %s",
+                "UPDATE coche SET estado = %s WHERE id_coche=%s",
     	          (estado_nuevo, id_coche))
             conn.commit()
             cur.close()
-            conn.close()
-            return render_template('coches_averia.html', success=True)
+            msg = "La avería ha sido guardada correctamente"
+            return render_template('coches_query.html', data=[], mensaje=msg)
         else:
             msg = "La avería introducida ya se encontraba registrada"
-            back = "/coches/notificar_averia"
-            return render_template("error.html", message=msg, back=back)
-    except:
-        cur.close()
-        return render_template('coches_averia.html', errors=[])
-
-
-
-@coches.route("/notificar_reparacion", methods=['GET','POST'])
-def notificar_reparacion():
-	
-    id_coche = request.form.get('id_coche', default='', type=str)
-    averia = request.form.get('averia', default='', type=str)
-
-    if id_coche == '' or averia == '' or request.method=='GET':
-        return render_template('coches_query.html', data=[])
-
-    cur = conn.cursor()
-    try:
-        cur.execute(
-            "SELECT estado FROM coches WHERE id_coche=%s",
-    	      (id_coche,))
+            back = "/coches/"
+            return render_template("error.html", mensaje=msg, back=back)
     
-        estado_previo = cur.fetchall()
+
+
+
+
+
+
+@coches.route("/notificar_reparacion/<id_coche>/", methods=['GET','POST'])
+def notificar_reparacion(id_coche):
+
+    if request.method=='GET':
+        return render_template('coches_reparacion.html', data=[], id_coche=id_coche)
+
+    if request.form['submit_button'] == 'Eliminar avería':
+
+        averia = request.form.get('averia', default='', type=str)
+        if averia == '':
+            msg = "No se ha introducido ningun avería"
+            back = "/coches/"
+            return render_template("error.html", message=msg, back=back)
+
+        cur = conn.cursor()
+        cur.execute("SELECT estado FROM coche WHERE id_coche=%s", (id_coche,))
+        estado_previo = cur.fetchone()[0]
         cur.close()
         if estado_previo == None:
-            msg = "No se ha encontrado ningún coche con el identificador introducido"
-            back = "/coches/notificar_averia"
-            return render_template("error.html", message=msg, back=back)
-        elif estado_previo.find(averia) != -1:
+            estado_previo = ''
+
+        if estado_previo.find(averia) != -1:
             estado_nuevo = estado_previo.replace(averia+'/', '');
             cur = conn.cursor()
             cur.execute(
-                "UPDATE coches SET estado = %s WHERE id_coche = %s",
+                "UPDATE coche SET estado = %s WHERE id_coche = %s",
     	          (estado_nuevo, id_coche))
             conn.commit()
             cur.close()
-            conn.close()
-            return render_template('coches_reparacion.html', success=True)
+            msg = "La avería ha sido eliminada correctamente"
+            return render_template('coches_query.html', data=[], mensaje=msg)
         else:
             msg = "La avería introducida no se encontraba registrada"
-            back = "/coches/notificar_reparacion"
-            return render_template("error.html", message=msg, back=back)
-    except:
-        cur.close()
-        return render_template('coches_reparacion.html', errors=[])
+            back = "/coches/"
+            return render_template("error.html", mensaje=msg, back=back)
 
 
 
 
-@coches.route("/crear", methods=["GET", "POST"])
+"""
+@coches.route("/crear/", methods=["GET", "POST"])
 def crear_coche():
 
     if request.method == "GET":
@@ -211,12 +179,12 @@ def crear_coche():
     # check that all the fields are fulfilled
     if not all([marca, modelo, color]):
         msg = "Alguno de los campos no ha sido introducido correctamente"
-        back = "/coches/crear"
+        back = "/coches"
         return render_template("error.html", message=msg, back=back)
 
     # insert in the db
     sql = "INSERT INTO coche(marca, modelo, color) VALUES (%s,%s,%s)"
-    
+        
     cur = conn.cursor()
     cur.execute(sql, (marca, modelo, color))
     conn.commit()
@@ -224,6 +192,7 @@ def crear_coche():
     conn.close()
 
     return render_template("coches_query.html", success=True)
+"""
 
 #método matricular coche?
 
