@@ -18,3 +18,6 @@ INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUE
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678B', '1', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678B', '2', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
 INSERT INTO alquiler(dni,id_coche,fecha_inicio, fecha_fin, precio, estado) VALUES ('12345678C', '1', '1/2/2000', '1/2/2000', '2', 'no_pagado') ON CONFLICT DO NOTHING;
+
+
+INSERT INTO proveedor(cif, nombre, ubicacion, telefono, correo) VALUES ('12345678A', 'autoslocos', 'pulianas', 660816891, 'example@example.com')
