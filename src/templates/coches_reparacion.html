@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <div class="container-fluid">
+    
+  <form action='/coches/notificar_reparacion/{{id_coche}}/', method="post">
+    <div class="form-group">
+      <label for="averia">Avería a eliminar</label>
+      <input type="text" class="form-control" name="averia">
+    </div>
+    <input type="submit" class="btn btn-primary" name="submit_button" value="Eliminar avería">
+  </form>
+  
+  </div>
+
+{% endblock content %}
