@@ -28,7 +28,11 @@ def consultar_clientes():
 
             cur.close()
 
-            return render_template('clientes_query_clientes.html', data=data)
+            if not data:
+                mensaje = "No hay datos para mostrar."
+            else:
+                mensaje = ''
+            return render_template('clientes_query_clientes.html', data=data, mensaje=mensaje)
         
         else:
             
@@ -36,17 +40,24 @@ def consultar_clientes():
             nombre = request.form.get('nombre', default='', type=str)
             telefono = request.form.get('telefono', default='', type=str)
 
+
             if request.form['submit_button'] == 'Buscar': 
 
                 if dni == '' and nombre == '' and telefono == '':
-                    return render_template('clientes_query_clientes.html', data=[])
+                    data=[]
+                    mensaje = "Todos los campos están vacíos, no hay datos para mostrar."
+                else:
+                    cur = conn.cursor()
+                    cur.execute("Select * from cliente where dni=%s or nombre=%s or telefono=%s",(dni,nombre,telefono))
+                    data = cur.fetchall()
+                    cur.close()
 
-                cur = conn.cursor()
-                cur.execute("Select * from cliente where dni=%s or nombre=%s or telefono=%s",(dni,nombre,telefono))
-                data = cur.fetchall()
-                cur.close()
+                    if not data:
+                        mensaje = "No hay datos para mostrar."
+                    else:
+                        mensaje = ''
                 
-                return render_template('clientes_query_clientes.html', data=data)
+                return render_template('clientes_query_clientes.html', data=data, mensaje=mensaje)
 
 
             elif request.form['submit_button'] == 'Crear nuevo':
@@ -139,13 +150,12 @@ def modificar_cliente_do():
     nombre_antiguo = request.form.get('nombre_antiguo', default='')
     telefono_antiguo = request.form.get('telefono_antiguo', default='')
 
-    dni_nuevo = request.form.get('dni_nuevo', default='')
     nombre_nuevo = request.form.get('nombre_nuevo', default='')
     telefono_nuevo = request.form.get('telefono_nuevo', default='')
 
     cur = conn.cursor()
-    query = "update cliente set dni=%s, nombre=%s, telefono=%s where dni=%s"
-    cur.execute(query, (dni_nuevo,nombre_nuevo,telefono_nuevo, dni_antiguo))
+    query = "update cliente set nombre=%s, telefono=%s where dni=%s"
+    cur.execute(query, (nombre_nuevo,telefono_nuevo, dni_antiguo))
     conn.commit()
     cur.close()    
 
