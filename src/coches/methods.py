@@ -10,57 +10,77 @@ conn = pg.connect(
     #port=5432
 )
 
+coches = Blueprint('coches', __name__,
+                        template_folder='../templates', url_prefix="/coches")
+
 @coches.route("/", methods=["GET","POST"])
-def consultar_crear_coches():
+def consultar_coche():
 
-    #print(request.form)
-    id_coche = request.form.get('id_coche', default='', type=str)
-
-    print("data: ", id_coche)
-
-    if id_coche == '' or request.method=='GET':
+    if request.method=='GET':
         return render_template('coches_query.html', data=[])
 
-    cur = conn.cursor()
-    try:
-        cur.execute(
-            "SELECT * FROM coches WHERE id_coche=%s",
-    	      (id_coche,))
-    
+
+    if request.form['submit_button'] == 'Mostrar todos':
+
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM coche")
         data = cur.fetchall()
         cur.close()
         return render_template('coches_query.html', data=data)
-    except:
+
+    else:
+        """consulta = "SELECT * FROM coche WHERE"
+        atributos = ("id_coche","numero_bastidor","matricula","marca","modelo","color")
+        parametros = []
+        for i in range(6):
+            aux = request.form.get(atributos[i], type=str)
+            if aux != '':
+                if parametros != []:
+                    consulta += " and"
+                parametros.append(aux)
+                consulta += " " + atributos[i] + "=%s"
+
+        parametros = tuple(parametros)
+
+
+        if request.form['submit_button'] == 'Consultar coche': 
+
+            if parametros == ():
+                return render_template('coches_query.html', data=[])
+
+            cur = conn.cursor()
+            cur.execute(consulta,parametros)
+            data = cur.fetchall()
+            cur.close()
+
+            return render_template('coches_query.html', data=data)
+"""
+        
+        marca = request.form.get("marca", type=str)
+        modelo = request.form.get("modelo", type=str)
+        color = request.form.get("color", type=str)
+
+
+        # check that all the fields are fulfilled
+        if not all([marca, modelo, color]):
+            msg = "Alguno de los campos no ha sido introducido correctamente"
+            back = "/coches"
+            return render_template("error.html", message=msg, back=back)
+
+        # insert in the db
+        sql = "INSERT INTO coche(marca, modelo, color) VALUES (%s,%s,%s)"
+        
+        cur = conn.cursor()
+        cur.execute(sql, (marca, modelo, color))
+        conn.commit()
         cur.close()
-        return render_template('coches_query.html', errors=[])
+        conn.close()
 
-@coches.route("/crear", methods=["GET", "POST"])
-def crear_coche():
-
-    if request.method == "GET":
-        return render_template("coches_crear.html")
-    
-    marca = request.form.get("marca", type=str)
-    modelo = request.form.get("modelo", type=int)
-    color = request.form.get("color", type=str)
+        return render_template("coches_query.html", success=True)
 
 
-    # check that all the fields are fulfilled
-    if not all([marca, modelo, color]):
-        msg = "Alguno de los campos no ha sido introducido correctamente"
-        back = "/coches/crear"
-        return render_template("error.html", message=msg, back=back)
 
-    # insert in the db
-    sql = "INSERT INTO coches(marca, modelo, color) VALUES (%s,%s,%s)"
-    
-    cur = conn.cursor()
-    cur.execute(sql, (marca, modelo, color))
-    conn.commit()
-    cur.close()
-    conn.close()
 
-    return render_template("coches_crear.html", success=True)
     
 @coches.route("/eliminar", methods=["POST"])
 def eliminar_coche():
@@ -177,7 +197,33 @@ def notificar_reparacion():
 
 
 
+@coches.route("/crear", methods=["GET", "POST"])
+def crear_coche():
 
+    if request.method == "GET":
+        return render_template("coches_crear.html")
+    
+    marca = request.form.get("marca", type=str)
+    modelo = request.form.get("modelo", type=str)
+    color = request.form.get("color", type=str)
+
+
+    # check that all the fields are fulfilled
+    if not all([marca, modelo, color]):
+        msg = "Alguno de los campos no ha sido introducido correctamente"
+        back = "/coches/crear"
+        return render_template("error.html", message=msg, back=back)
+
+    # insert in the db
+    sql = "INSERT INTO coche(marca, modelo, color) VALUES (%s,%s,%s)"
+    
+    cur = conn.cursor()
+    cur.execute(sql, (marca, modelo, color))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return render_template("coches_query.html", success=True)
 
 #método matricular coche?
 
