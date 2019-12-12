@@ -67,7 +67,10 @@ def consultar_alquileres():
 		except:
 			cur.close()
 			conn.rollback()
-			error = "Error al crear el nuevo alquiler: formato incorrecto de los datos introducidos."
+			if disponibilidad_coche(parametros[1],parametros[2],parametros[3]) == []:
+				error = "Error al crear el nuevo alquiler: formato incorrecto de los datos introducidos."
+			else:
+				error = "En dicho periodo de alquiler el vehículo no está disponible."
 			return render_template('alquileres_query.html', error=error)
 		
 @alquileres.route("/eliminar", methods=["POST"])
@@ -97,13 +100,26 @@ def modificar_alquiler():
     pass
 """
 
+def disponibilidad_coche(id_coche, fecha_inicio, fecha_fin):
+		data = []
+		consulta = "SELECT * FROM alquiler WHERE id_coche=%s and ((%s<=fecha_inicio and fecha_inicio<=%s) or (fecha_inicio<%s and %s<=fecha_fin));"
+		
+		if id_coche == '' or fecha_inicio == '' or fecha_fin == '':
+			return data
+		
+		cur = conn.cursor()
+		cur.execute(consulta,(id_coche,fecha_inicio,fecha_fin,fecha_inicio,fecha_inicio))
+		data = cur.fetchall()
+		cur.close()
+		
+		return data
+			
 @alquileres.route("/disponibilidad", methods=["GET", "POST"])
 def consultar_disponibilidad():
 	if request.method == 'GET':
 		return render_template('disponibilidad_query.html', data=[])
     
 	if request.form['submit_button'] == 'Consultar disponibilidad':
-		consulta = "SELECT * FROM alquiler WHERE id_coche=%s and ((%s<=fecha_inicio and fecha_inicio<=%s) or (fecha_inicio<%s and %s<=fecha_fin));"
 		id_coche = request.form.get("id_coche", type=str)
 		fecha_inicio = request.form.get('fecha_inicio', type=str)
 		fecha_fin = request.form.get('fecha_fin', type=str)
@@ -111,10 +127,7 @@ def consultar_disponibilidad():
 		if id_coche == '' or fecha_inicio == '' or fecha_fin == '':
 			return render_template('disponibilidad_query.html', mensaje="No se han introducido los datos suficientes")
 			
-		cur = conn.cursor()
-		cur.execute(consulta,(id_coche,fecha_inicio,fecha_fin,fecha_inicio,fecha_inicio))
-		data = cur.fetchall()
-		cur.close()
+		data = disponibilidad_coche(id_coche, fecha_inicio, fecha_fin)
 		
 		if data == []:
 			return render_template('disponibilidad_query.html', mensaje="El vehículo está disponible desde el dia " + fecha_inicio + " hasta el día " + fecha_fin)
