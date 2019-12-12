@@ -33,22 +33,20 @@
   {% endif %}
 
   {% if data %}
-  <div class="container-fluid">
-    <ul class="list-group">
+  <div class="container-fluid" style="padding-top: 30px">
 		<table class="table">
 			<thead>
 				<tr>
 					<th scope="col">DNI</th>
-					<th scope="col">IDcoche</th>
-					<th scope="col">FechaInicio</th>
-					<th scope="col">FechaFin</th>
+					<th scope="col">Identificador de coche</th>
+					<th scope="col">Fecha de inicio</th>
+					<th scope="col">Fecha de fin</th>
 					<th scope="col">Precio (€)</th>
 					<th scope="col">Estado</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for row in data %}
-				<li class="list-group-item">				  
 					<tr>
 						<td>{{ row.0 }}</td>
 						<td>{{ row.1 }}</td>
@@ -66,11 +64,9 @@
               </form>
             </td>
 					</tr>
-				</li>
 				{% endfor %}
 			</tbody>
 		</table>
-    </ul>
   </div>
   {% endif %}
 {% endblock content %}

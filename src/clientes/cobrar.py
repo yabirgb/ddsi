@@ -24,10 +24,14 @@ def consultar():
         if request.form['submit_button'] == 'Mostrar todos':
             cur = conn.cursor()
             cur.execute("Select * from alquiler where estado='no_pagado' ")
-            
             data = cur.fetchall()
-
             cur.close()
+
+
+            if not data:
+                mensaje = "No hay datos para mostrar."
+            else:
+                mensaje = ''
 
             return render_template('cobrar.html', data=data)
         else: 
@@ -37,14 +41,58 @@ def consultar():
 
 
             if IDcoche == '' and DNI == '' and fechaInicio == '':
-                return render_template('cobrar.html', data=[])
-
-            cur = conn.cursor()
-            cur.execute("Select * from alquiler where estado='no_pagado' and DNI=%s and id_coche=%s and fecha_inicio=%s",(DNI,IDcoche, fechaInicio))
+                data=[]
+                mensaje = "Todos los campos están vacíos, no hay datos para mostrar."            
             
-            data = cur.fetchall()
-            cur.close()
-        return render_template('cobrar.html', data=data)
+            else:
+                cur = conn.cursor()
+
+                if IDcoche == '':
+                    if DNI == '':
+                        query = "Select * from alquiler where estado='no_pagado' and fecha_inicio=%s"
+                        cur.execute(query, (fechaInicio,))
+                    elif fechaInicio == '':
+                        query = "Select * from alquiler where estado='no_pagado' and dni=%s"
+                        cur.execute(query, (DNI,))
+                    else: 
+                        query = "Select * from alquiler where estado='no_pagado' and dni=%s and fecha_inicio=%s"
+                        cur.execute(query, (DNI,fechaInicio))
+
+                elif DNI == '':
+                    if IDcoche == '':
+                        query = "Select * from alquiler where estado='no_pagado' and fecha_inicio=%s"
+                        cur.execute(query, (fechaInicio,))
+                    elif fechaInicio == '':
+                        query = "Select * from alquiler where estado='no_pagado' and id_coche=%s"
+                        cur.execute(query, (IDcoche,))
+                    else: 
+                        query = "Select * from alquiler where estado='no_pagado' and id_coche=%s and fecha_inicio=%s"
+                        cur.execute(query, (IDcoche,fechaInicio))
+
+                elif fechaInicio == '':
+                    if DNI == '':
+                        query = "Select * from alquiler where estado='no_pagado' and id_coche=%s"
+                        cur.execute(query, (IDcoche,))
+                    elif IDcoche == '':
+                        query = "Select * from alquiler where estado='no_pagado' and dni=%s"
+                        cur.execute(query, (DNI,))
+                    else: 
+                        query = "Select * from alquiler where estado='no_pagado' and dni=%s and id_coche=%s"
+                        cur.execute(query, (DNI,IDcoche))
+
+                else :
+                    query = "Select * from alquiler where estado='no_pagado' and DNI=%s and id_coche=%s and fecha_inicio=%s"
+                    cur.execute(query,(DNI,IDcoche, fechaInicio))
+                
+                data = cur.fetchall()
+                cur.close()
+
+                if not data:
+                    mensaje = "No hay datos para mostrar."
+                else:
+                    mensaje = ''
+            
+            return render_template('cobrar.html', data=data, mensaje=mensaje)
 
 @cobrar.route("/cobrar_alquiler", methods=["POST"])
 def cobrar_alquiler():

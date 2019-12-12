@@ -12,4 +12,3 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER alquilerValido BEFORE INSERT ON alquiler FOR EACH ROW EXECUTE PROCEDURE esAlquilerValido();
-
