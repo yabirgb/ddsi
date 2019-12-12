@@ -28,8 +28,8 @@ def consultar_alquileres():
 
     cur = conn.cursor()
     cur.execute(
-        "Select * from alquiler where DNI=%s and id_coche=%s",
-    	(DNI,IDcoche))
+        "Select * from alquiler where DNI=%s and id_coche=%s and fecha_inicio=%s",
+    	(DNI,IDcoche,fechaInicio))
     
     data = cur.fetchall()
 
@@ -44,15 +44,16 @@ def crear_alquiler():
     if request.method == "GET":
         return render_template("crear_proveedor.html")
     
-    nombre = request.form.get("nombre", type=str)
-    ubicacion = request.form.get("ubicacion", type=str)
-    telefono = request.form.get("telefono", type=int)
-    correo = request.form.get("correo", type=str)
-    CIF = request.form.get("cif", type=str)
+    DNI = request.form.get('DNI', default='', type=str)
+    IDcoche = request.form.get('IDcoche', default='', type=str)
+    fechaInicio = request.form.get('fechaInicio', default='', type=str)
+    fechaFin = request.form.get('fechaFin', default='', type=str)
+    precio = request.form.get('precio', default='', type=str)
+    estado = request.form.get('estado', default='', type=str)
 
 
     # check that all the fields are fulfilled
-    if not all([nombre, ubicacion, telefono, correo, CIF]):
+    if not all([DNI, IDcoche, fechaInicio, fechaFin, precio, estado]):
         m = "Alguno de los campos no ha sido introducido correctamente"
         back = "/alquiler/crear"
         return render_template("error.html", message=m, back=back)
@@ -60,10 +61,10 @@ def crear_alquiler():
     # insert in the db
 
 
-    sql = "INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO alquiler(dni, id_coche, fecha_inicio, fecha_fin, precio, estado) VALUES (%s,%s,%s,%s,%s,%s)"
     
     cur = conn.cursor()
-    cur.execute(sql, (nombre, ubicacion,telefono,correo,CIF))
+    cur.execute(sql, (DNI, IDcoche, fechaInicio, fechaFin, precio, estado))
     conn.commit()
     cur.close()
     conn.close()
@@ -75,8 +76,4 @@ def modificar_alquiler():
 
 @alquileres.route("/disponibilidad", methods=["GET", "POST"])
 def consultar_disponibilidad():
-    pass
-
-@alquileres.route("/devolver", methods=["GET", "POST"])
-def devolver_coche():
     pass
