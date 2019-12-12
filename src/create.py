@@ -15,6 +15,12 @@ def create_db():
         cur = conn.cursor()
         cur.execute(data)
         cur.close()
+    
+    with open('sql/trigger_cliente.sql','r') as f:
+        data = f.read()
+        cur = conn.cursor()
+        cur.execute(data)
+        cur.close()
 
 def insert():
     with open('sql/insert.sql','r') as f:
