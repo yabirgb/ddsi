@@ -13,12 +13,20 @@ conn = pg.connect(
 proveedores = Blueprint('proveedores', __name__,
                         template_folder='../templates', url_prefix="/proveedores")
 
-@proveedores.route('/consulta', methods=['GET','POST'])
+@proveedores.route('/consulta', methods=['GET','POST', 'DELETE'])
 def consultar_proveedores():
 
     #print(request.form)
     nombre = request.form.get('nombre', default='', type=str)
     CIF = request.form.get('cif', default='', type=str)
+
+    if request.method == 'DELETE':
+        CIF = request.form.get('cif', type=str)
+        cur = conn.cursor()
+        cur.execute("DELETE FROM proveedor where CIF=%s cascade;", (CIF,))
+        cur.close()
+
+        return render_template('proveedores_query.html', data=[], deleted=f"Proveedor con {CIF} borrado correctamente")
 
     print("data: ", nombre, CIF)
 
@@ -28,7 +36,7 @@ def consultar_proveedores():
     cur = conn.cursor()
     try:
         cur.execute(
-            "Select * from proveedores where cif=%s or nombre ILIKE %s",
+            "Select * from proveedor where cif=%s or nombre ILIKE %s",
     	    (CIF,nombre))
     
         data = cur.fetchall()
@@ -60,7 +68,7 @@ def crear_proveedor():
     # insert in the db
 
 
-    sql = "INSERT INTO proveedores(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO proveedor(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
     
     cur = conn.cursor()
     cur.execute(sql, (CIF, nombre, ubicacion,telefono,correo))
@@ -70,6 +78,70 @@ def crear_proveedor():
 
     return render_template("proveedores_crear.html", success=True)
     
-@proveedores.route("/eliminar", methods=["POST"])
-def eliminar_proveedor():
+
+@proveedores.route("/solicitar", methods=["POST", "GET"])
+def solicitar():
+
+
+    campos={
+        'CIF': '',
+        'marca': '',
+        'modelo': '',
+        'color': '',
+        'punto_recogida': '',
+        'fecha_entrega': ''
+    }
+
+    
+    if request.method == "GET":
+        return render_template("solicitar_query.html", campos=campos)
+
+    
+
+    CIF = request.form.get("CIF", type=str, default='')
+    marca = request.form.get("marca", type=str, default='')
+    modelo = request.form.get("modelo", type=str, default='')
+    color = request.form.get("color", type=str, default='')
+    punto_recogida = request.form.get("punto", type=str, default='')
+    fecha_entrega = request.form.get("fecha_entrega", default='')
+
+    campos={
+        'CIF': CIF,
+        'marca': marca,
+        'modelo': modelo,
+        'color': color,
+        'punto_recogida': punto_recogida,
+        'fecha_entrega': fecha_entrega
+    }
+
+    # nos aseguramos de que el proveedor existe
+
+    cur = conn.cursor()
+
+    cur.execute("SELECT CIF FROM proveedor where CIF=%s", (CIF,))
+
+    query = cur.fetchone()
+
+    if not query:
+        cur.close()
+        return render_template("solicitar_query.html", err="CIF introducido no se corresponde con un proveedor válido.", campos=campos)
+
+
+    cur.close()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO coche(marca, modelo, color) VALUES (%s, %s, %s) RETURNING id_coche;", (marca, modelo, color))
+    t = cur.fetchone()
+    print(t)
+    id_coche = t[0]
+    cur.execute("INSERT INTO solicitud(id_coche, fecha_entrega, punto_recogida, cif) values(%s, %s, %s, %s)", (id_coche, fecha_entrega, punto_recogida, CIF))
+    conn.commit()
+
+    cur.close()
+
+    return render_template("solicitar_query.html", campos=campos,success=True, msg="Coche creado correctamente")
+
+    
+ 
+@proveedores.route("/solicitudes", methods=["POST", "GET"])
+def busqueda_solicitud():
     pass

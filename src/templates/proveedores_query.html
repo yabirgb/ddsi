@@ -45,8 +45,18 @@
             <td>{{ row.4 }}</td>
             <td>{{ row.5 }}</td>
             <td></td>
-            <td><button type="button" class="btn btn-primary">Editar</button>
-              <button type="button" class="btn btn-danger">Eliminar</button></td>
+            <td>
+			  <div class="row">
+				<div class="col-sm">
+				  <button type="button" class="btn btn-primary">Editar</button>
+				</div>
+				<div class="col-sm">
+				  <form method="delete" action="/proveedores/consulta">
+					<input type="text" name="cif" hidden value="{{row.1}}">
+					<button type="submit" class="btn btn-danger">Eliminar</button>	
+				  </form>
+				</div>
+			</td>
           </tr>
       {% endfor %}
         </tbody>
