@@ -1,56 +1,127 @@
 {% extends 'base.html' %}
 {% block content %}
   
-  <div class="container-fluid">
-    
-  <form action='/alquileres/consulta', method="post">
-    <div class="form-group">
-      <label for="DNI">DNI cliente</label>
-      <input type="text" class="form-control" name="DNI">
-    </div>
-    <div class="form-group">
-      <label for="IDcoche">Identificador del coche</label>
-      <input type="text" class="form-control" name="IDcoche">
-    </div>
-    <div class="form-group">
-      <label for="fechaInicio">Fecha de inicio de alquiler</label>
-      <input type="text" class="form-control" name="fechaInicio">
-    </div>
-    <button type="submit" class="btn btn-primary">Buscar</button>
-  </form>
-  
-  </div>
-  
-  {% if data %}
-  <div class="container-fluid">
-    <ul class="list-group">
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">DNI</th>
-					<th scope="col">IDcoche</th>
-					<th scope="col">FechaInicio</th>
-					<th scope="col">FechaFin</th>
-					<th scope="col">Precio (€)</th>
-					<th scope="col">Estado</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for row in data %}
-				<li class="list-group-item">				  
+	<div class="container-fluid">
+		<form action='/alquileres/consulta', method="post">
+			<div class="row">
+			  	<div class="col-sm">
+					<div class="form-group">
+					  <label for="dni">DNI cliente</label>
+					  <input type="text" class="form-control" name="dni">
+					</div>
+					<div class="form-group">
+					  <label for="id_coche">Identificador del coche</label>
+					  <input type="text" class="form-control" name="id_coche">
+					</div>
+					<div class="form-group">
+					  <label for="fecha_inicio">Fecha de inicio de alquiler</label>
+					  <input type="text" class="form-control" name="fecha_inicio">
+					</div>
+				</div>
+				<div class="col-sm">
+					<div class="form-group">
+					  <label for="fecha_fin">Fecha de finalización del alquiler</label>
+					  <input type="text" class="form-control" name="fecha_fin">
+					</div>
+					<div class="form-group">
+					  <label for="precio">Precio final (€)</label>
+					  <input type="text" class="form-control" name="precio">
+					</div>
+					<div class="form-group">
+					  <label for="estado">Estado actual de pago</label>
+					  <input type="text" class="form-control" name="estado">
+					</div>
+				</div>
+			</div>
+
+			<input type="submit" class="btn btn-primary" name="submit_button" value="Consultar alquiler">
+			<input type="submit" class="btn btn-primary" name="submit_button" value="Crear alquiler">
+		</form>
+	</div>
+
+	{% if mensaje %}
+		<div class="container-fluid" style="padding-top: 30px"></div>
+			{{ mensaje }}
+		</div>
+	{% endif %}
+
+	{% if error %}
+		<div class="container-fluid" style="padding-top: 30px"></div>
+			{{ error }}
+		</div>
+	{% elif data %}
+		<form id="eliminar" action='/alquileres/eliminar', method="post"></form>
+		<div class="container-fluid" style="padding-top: 30px">
+			<table class="table">
+				<thead>
 					<tr>
-						<td>{{ row.0 }}</td>
-						<td>{{ row.1 }}</td>
-						<td>{{ row.2 }}</td>
-						<td>{{ row.3 }}</td>
-						<td>{{ row.4 }}</td>
-						<td>{{ row.5 }}</td>
+						<th scope="col">DNI</th>
+						<th scope="col">IDcoche</th>
+						<th scope="col">FechaInicio</th>
+						<th scope="col">FechaFin</th>
+						<th scope="col">Precio (€)</th>
+						<th scope="col">Estado</th>
+						<th scope="col">Eliminar</th>
+						<th scope="col"></th>
 					</tr>
-				</li>
-				{% endfor %}
-			</tbody>
-		</table>
-    </ul>
-  </div>
-  {% endif %}
+				</thead>
+				<tbody>
+					{% for row in data %}			  
+						<tr>
+							<td>{{ row.0 }}</td>
+							<td>{{ row.1 }}</td>
+							<td>{{ row.2 }}</td>
+							<td>{{ row.3 }}</td>
+							<td>{{ row.4 }}</td>
+							<td>{{ row.5 }}</td>
+							<td>
+								<input type="checkbox" form="eliminar" name="{{ loop.index0 }}">
+								<input type="hidden" form="eliminar" name="{{ loop.index0 }}_dni" value="{{ row.0 }}">
+								<input type="hidden" form="eliminar" name="{{ loop.index0 }}_id_coche" value="{{ row.1 }}">
+								<input type="hidden" form="eliminar" name="{{ loop.index0 }}_fecha_inicio" value="{{ row.2 }}">
+							</td>
+							<td>
+						 		<a class="btn btn-primary" href="modificar_alquiler/{{ row.0 }}/" role="button">Modificar</a>
+					  		</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<input type="submit" form="eliminar" class="btn btn-primary" name="delete_button" value="Eliminar selección">
+
+		</div>
+	{% endif %}
+
+	{% if data_new %}
+		<div class="container-fluid" style="padding-top: 30px">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">DNI</th>
+						<th scope="col">IDcoche</th>
+						<th scope="col">FechaInicio</th>
+						<th scope="col">FechaFin</th>
+						<th scope="col">Precio (€)</th>
+						<th scope="col">Estado</th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<li class="list-group-item">				  
+						<tr>
+							<td>{{ data_new.0 }}</td>
+							<td>{{ data_new.1 }}</td>
+							<td>{{ data_new.2 }}</td>
+							<td>{{ data_new.3 }}</td>
+							<td>{{ data_new.4 }}</td>
+							<td>{{ data_new.5 }}</td>
+							<td>
+						 		<a class="btn btn-primary" href="modificar_alquiler/{{ data_new.0 }}/" role="button">Modificar</a>
+					  		</td>
+						</tr>
+					</li>
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
 {% endblock content %}

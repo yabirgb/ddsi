@@ -34,8 +34,7 @@ def consultar_clientes():
                 mensaje = ''
             return render_template('clientes_query_clientes.html', data=data, mensaje=mensaje)
         
-        else:
-            
+        else:            
             dni = request.form.get('dni', default='', type=str)
             nombre = request.form.get('nombre', default='', type=str)
             telefono = request.form.get('telefono', default='', type=str)
@@ -69,14 +68,18 @@ def consultar_clientes():
                 else:
                     sql = "INSERT INTO cliente(dni, nombre, telefono) VALUES (%s,%s,%s)"
                     cur = conn.cursor()
-                    cur.execute(sql, (dni, nombre, telefono))
-                    conn.commit()
-                    cur.close()
+                    try: 
+                        cur.execute(sql, (dni, nombre, telefono))
+                        conn.commit()
+                        cur.close()
+                        mensaje = "Nuevo cliente creado con éxito."
+                        return render_template('clientes_query_clientes.html', data=[], mensaje=mensaje)
+                    except:
+                        cur.close()
+                        conn.rollback()
+                        error = "Error al crear el nuevo cliente: formato incorrecto de DNI."
+                        return render_template('clientes_query_clientes.html', error=error)
 
-                    mensaje = "Nuevo cliente creado con éxito."
-                    return render_template('clientes_query_clientes.html', data=[], mensaje=mensaje)
-        
-        
 
 
 @clientes.route("/eliminar", methods=["POST"])
@@ -92,9 +95,15 @@ def eliminar_clientes():
         dni = request.form.get(str(i)+'_dni', default='')
 
         if eliminar == 'on':
-            cur.execute("delete from cliente where dni=%s",(dni,))
-            conn.commit()
-            mensaje = "Cliente(s) eliminados con éxito."
+            try:
+                cur.execute("delete from cliente where dni=%s",(dni,))
+                conn.commit()
+                mensaje = "Cliente(s) eliminados con éxito."
+            except:
+                cur.close()
+                conn.rollback()
+                error = "Error al eliminar el cliente con DNI" + dni
+                render_template('clientes_query_clientes.html', error = error)
     
     cur.close()
 
@@ -155,11 +164,19 @@ def modificar_cliente_do():
 
     cur = conn.cursor()
     query = "update cliente set nombre=%s, telefono=%s where dni=%s"
-    cur.execute(query, (nombre_nuevo,telefono_nuevo, dni_antiguo))
-    conn.commit()
-    cur.close()    
+    try:
+        cur.execute(query, (nombre_nuevo,telefono_nuevo, dni_antiguo))
+        conn.commit()
+        cur.close()
+        mensaje = "Datos del cliente actualizados con éxito"
+        return render_template('clientes_query_clientes.html', mensaje = mensaje, data=[])
+    except:
+        cur.close()
+        conn.rollback()
+        error = "Error: los campos introducidos no son correctos"
+        return render_template('clientes_query_clientes.html', data=[], error = error)
 
-    return render_template('clientes_query_clientes.html', data=[])
+    
 
 @clientes.route("/cobrar_alquiler", methods=["POST"])
 def cobrar_alquiler_cliente():
