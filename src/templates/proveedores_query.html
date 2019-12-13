@@ -48,12 +48,12 @@
             <td>
 			  <div class="row">
 				<div class="col-sm">
-				  <button type="button" class="btn btn-primary">Editar</button>
+				  <a href="/proveedores/editar/{{row.0}}" type="button" class="btn btn-primary">Editar</a>
 				</div>
 				<div class="col-sm">
-				  <form method="delete" action="/proveedores/consulta">
+				  <form method="post" action="/proveedores/consulta">
 					<input type="text" name="cif" hidden value="{{row.1}}">
-					<button type="submit" class="btn btn-danger">Eliminar</button>	
+					<button type="submit" name="submit_button" class="btn btn-danger" value="eliminar-{{row.0}}">Eliminar</button>
 				  </form>
 				</div>
 			</td>
@@ -61,6 +61,15 @@
       {% endfor %}
         </tbody>
       </table>
-    </div>
-  {% endif %}
+      </div>
+    {% elif not data and not get and not deleted%}
+      <div class="alert alert-info" role="alert">
+        No se ha encontrado ningun proveedor con los datos proporcionados
+      </div>
+
+      {% elif deleted %}
+        <div class="alert alert-success" role="alert">
+          {{deleted}}
+        </div>
+      {% endif %}
 {% endblock content %}
