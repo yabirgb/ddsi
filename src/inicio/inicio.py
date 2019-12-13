@@ -1,3 +1,5 @@
+import traceback, sys
+
 import psycopg2 as pg
 
 from flask import Blueprint, render_template, request
@@ -10,7 +12,7 @@ conn = pg.connect(
     #port=5432
 )
 
-inicio = Blueprint('inicio', __name__, template_folder='../templates', url_prefix="/home")
+inicio = Blueprint('inicio', __name__, template_folder='../templates', url_prefix="")
 
 @inicio.route('/', methods=['GET','POST'])
 def inicio_f():
@@ -20,7 +22,7 @@ def inicio_f():
     else:
        
         if request.form['submit_button'] == 'Inicializar BD':
-            if create_db():
+            if not create_db():
                 mensaje = "Ha ocurrido un error al inicializar la base de datos"
             else:
                 mensaje = "Base de datos inicializada con éxito"
@@ -28,21 +30,26 @@ def inicio_f():
             return render_template('index.html', mensaje=mensaje)
         
         elif request.form['submit_button'] == 'Insertar datos de prueba':            
-            if insert():
+            if not insert():
                 mensaje = "Ha ocurrido un error al insertar los datos de prueba"
             else:
-                mensaje = "Datos insertados con éxito"          
-            
+                mensaje = "Datos insertados con éxito"
+                
             return render_template('index.html', mensaje=mensaje)
 
         elif request.form['submit_button'] == 'Borrar datos':
-            if drop_db():
+            if not drop_db():
                 mensaje = "Ha ocurrido un error al borrar los datos"
             else:
                 mensaje = "Datos eliminados con éxito"
             return render_template('index.html', mensaje=mensaje)
 
 def create_db():
+
+    """
+    Devuelve True si la base de datos se ha creado correctamente
+    """
+    
     with open('sql/creation.sql','r') as f:
         data = f.read()
         cur = conn.cursor()
@@ -50,11 +57,11 @@ def create_db():
             cur.execute(data)
             conn.commit()
             cur.close()
-            return False
-        except:
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
             cur.close()
             conn.rollback()
-            return True
+            return False
 
     
     with open('sql/trigger_cliente.sql','r') as f:
@@ -64,13 +71,19 @@ def create_db():
             cur.execute(data)
             conn.commit()
             cur.close()
-            return False
         except:
             cur.close()
             conn.rollback()
-            return True
+            return False
+
+    return True
 
 def insert():
+
+    """
+    Devuelve True si la operacion se realiza con exito
+    """
+    
     with open('sql/insert.sql','r') as f:
         data = f.read()
         cur = conn.cursor()
@@ -78,12 +91,15 @@ def insert():
             cur.execute(data)
             conn.commit()
             cur.close()
-            return False
         except:
             cur.close()
             conn.rollback()
-            return True
+            return False
+
+    return True
+        
 def drop_db():
+    global conn
     with open('sql/drop.sql','r') as f:
         data = f.read()
         cur = conn.cursor()
@@ -91,8 +107,10 @@ def drop_db():
             cur.execute(data)
             conn.commit()
             cur.close()
-            return False
+            conn.close()
         except:
             cur.close()
             conn.rollback()
-            return True
+            return False
+        
+    return True
