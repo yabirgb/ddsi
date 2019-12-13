@@ -1,4 +1,4 @@
-CREATE TABLE cliente(
+CREATE TABLE IF NOT EXISTS cliente(
     dni VARCHAR(9) PRIMARY KEY,
     nombre VARCHAR(20), 
     telefono VARCHAR(20)

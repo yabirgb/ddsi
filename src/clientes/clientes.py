@@ -22,17 +22,22 @@ def consultar_clientes():
        
         if request.form['submit_button'] == 'Mostrar todos':
             cur = conn.cursor()
-            cur.execute("Select * from cliente ")
-            
-            data = cur.fetchall()
-
-            cur.close()
+            data=[]
+            error=''
+            try:
+                cur.execute("Select * from cliente ")          
+                data = cur.fetchall()
+                cur.close()
+            except:
+                cur.close()
+                conn.rollback()
+                error = "Ha ocurrido un error. "
 
             if not data:
                 mensaje = "No hay datos para mostrar."
             else:
                 mensaje = ''
-            return render_template('clientes_query_clientes.html', data=data, mensaje=mensaje)
+            return render_template('clientes_query_clientes.html', data=data, mensaje=mensaje, error=error)
         
         else:            
             dni = request.form.get('dni', default='', type=str)
@@ -47,9 +52,16 @@ def consultar_clientes():
                     mensaje = "Todos los campos están vacíos, no hay datos para mostrar."
                 else:
                     cur = conn.cursor()
-                    cur.execute("Select * from cliente where dni=%s or nombre=%s or telefono=%s",(dni,nombre,telefono))
-                    data = cur.fetchall()
-                    cur.close()
+                    data=[]
+                    error=''
+                    try:
+                        cur.execute("Select * from cliente where dni=%s or nombre=%s or telefono=%s",(dni,nombre,telefono))
+                        data = cur.fetchall()
+                        cur.close()
+                    except:
+                        cur.close()
+                        conn.rollback()
+                        error = "Ha ocurrido un error. "
 
                     if not data:
                         mensaje = "No hay datos para mostrar."
@@ -117,30 +129,44 @@ def consultar_alquiler_cliente():
     mensaje = ''
     
     cur = conn.cursor()
-    cur.execute("select * from alquiler where dni=%s", (dni,))
-    data_alquiler = cur.fetchall()
-    cur.close()
+    data_alquiler=[]
+    error=''
+
+    try:
+        cur.execute("select * from alquiler where dni=%s", (dni,))
+        data_alquiler = cur.fetchall()
+        cur.close()
+    except:
+        cur.close()
+        conn.rollback()
+        error = "Ha ocurrido un error"
 
     if not data_alquiler:
         mensaje = "No hay datos para mostrar. "
 
-    return render_template('clientes_query_alquiler.html', data=data_alquiler, mensaje=mensaje)
+    return render_template('clientes_query_alquiler.html', data=data_alquiler, mensaje=mensaje, error=error)
 
 @clientes.route("/consultar_pendientes", methods=["POST"])
 def consultar_pendientes_cliente():
 
     dni = request.form.get('dni_consultar_alquiler', default='')
     mensaje=''
+    error=''
 
     cur = conn.cursor()
-    cur.execute("select * from alquiler where dni=%s and estado='no_pagado'", (dni,))
-    data_alquiler = cur.fetchall()
-    cur.close()
+    try:
+        cur.execute("select * from alquiler where dni=%s and estado='no_pagado'", (dni,))
+        data_alquiler = cur.fetchall()
+        cur.close()
+    except:
+        cur.close()
+        conn.rollback()
+        error = "Ha ocurrido un error"
 
     if not data_alquiler:
         mensaje = "No hay datos para mostrar."
 
-    return render_template('clientes_query_alquiler.html', data=data_alquiler, mensaje=mensaje)
+    return render_template('clientes_query_alquiler.html', data=data_alquiler, mensaje=mensaje, error=error)
 
 
 @clientes.route("/modificar_preguntar", methods=["POST"])
@@ -186,10 +212,15 @@ def cobrar_alquiler_cliente():
     fecha_cobrar = request.form.get('fecha_cobrar', default='')
 
     cur = conn.cursor()
-    query = "update alquiler set estado='pagado' where dni=%s and id_coche=%s and fecha_inicio=%s"
-    cur.execute(query, (dni_cobrar, idcoche_cobrar, fecha_cobrar))
-    conn.commit()
-    cur.close()
+    try:   
+        query = "update alquiler set estado='pagado' where dni=%s and id_coche=%s and fecha_inicio=%s"
+        cur.execute(query, (dni_cobrar, idcoche_cobrar, fecha_cobrar))
+        conn.commit()
+        cur.close()
+    except:
+        cur.close()
+        conn.rollback()
+        error = "Ha ocurrido un error"
 
     mensaje = "Cambios realizados con éxito"
-    return render_template('clientes_query_alquiler.html', data=[], mensaje=mensaje)
+    return render_template('clientes_query_alquiler.html', data=[], mensaje=mensaje, error=error)

@@ -10,6 +10,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS dniCliente
+  ON cliente;
+
 CREATE TRIGGER dniCliente
 	BEFORE INSERT ON cliente
 	FOR EACH ROW

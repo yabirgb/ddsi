@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Alquiler de coches</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-</head>
-
-<body>
-
-  <nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand mb-0 h1">JAJAJA</span>
-  </nav>
+{% extends 'base.html' %}
+{% block content %}
 
   <div class="container-fluid">
-    <ul class="list-group">
-      {% for row in content.rows %}
-        <li class="list-group-item">Id: {{ row.0 }} - Texto: {{ row.1 }}</li>
-      {% endfor %}
-    </ul>
+    Rentacar 
   </div>
-</body>
 
-</html> 
+  <div class="container-fluid">
+    <form id="eliminar" action="{{ url_for('inicio.inicio_f') }}", method="post">
+      <input type="submit" class="btn btn-primary" name="submit_button" value="Inicializar BD">
+      <input type="submit" class="btn btn-primary" name="submit_button" value="Insertar datos de prueba">
+      <input type="submit" class="btn btn-primary" name="submit_button" value="Borrar datos">
+    </form>
+  </div>
+
+
+  {% if mensaje %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+    {{ mensaje }}
+  </div>
+  {% endif %}
+
+{% endblock content %}

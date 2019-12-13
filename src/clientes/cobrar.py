@@ -18,7 +18,7 @@ cobrar = Blueprint('cobrar', __name__,
 def consultar():
 
     if request.method=='GET':
-        return render_template('cobrar.html', data=[])
+        return render_template('clientes_cobrar.html', data=[])
     else:
 
         if request.form['submit_button'] == 'Mostrar todos':
@@ -33,7 +33,7 @@ def consultar():
             else:
                 mensaje = ''
 
-            return render_template('cobrar.html', data=data)
+            return render_template('clientes_cobrar.html', data=data)
         else: 
             DNI = request.form.get('dni', default='', type=str)
             IDcoche = request.form.get('idcoche', default='', type=str)
@@ -92,7 +92,7 @@ def consultar():
                 else:
                     mensaje = ''
             
-            return render_template('cobrar.html', data=data, mensaje=mensaje)
+            return render_template('clientes_cobrar.html', data=data, mensaje=mensaje)
 
 @cobrar.route("/cobrar_alquiler", methods=["POST"])
 def cobrar_alquiler():
@@ -107,4 +107,4 @@ def cobrar_alquiler():
     cur.close()
 
     mensaje = "Cambios realizados con éxito"
-    return render_template('cobrar.html', data=[], mensaje=mensaje)
+    return render_template('clientes_cobrar.html', data=[], mensaje=mensaje)

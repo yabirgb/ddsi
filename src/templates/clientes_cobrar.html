@@ -32,7 +32,11 @@
   </div>
   {% endif %}
 
-  {% if data %}
+  {% if error %}
+  <div class="container-fluid" style="padding-top: 30px"></div>
+      {{ error }}
+  </div>
+  {% elif data %}
   <div class="container-fluid" style="padding-top: 30px">
 		<table class="table">
 			<thead>
