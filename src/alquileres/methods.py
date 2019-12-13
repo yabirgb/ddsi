@@ -94,12 +94,6 @@ def eliminar_alquiler():
 
     return render_template('alquileres_query.html', data=[], mensaje=msg)
 
-"""
-@alquileres.route("/modificar", methods=["GET", "POST"])
-def modificar_alquiler():
-    pass
-"""
-
 def disponibilidad_coche(id_coche, fecha_inicio, fecha_fin):
 		data = []
 		consulta = "SELECT * FROM alquiler WHERE id_coche=%s and ((%s<=fecha_inicio and fecha_inicio<=%s) or (fecha_inicio<%s and %s<=fecha_fin));"
@@ -133,4 +127,54 @@ def consultar_disponibilidad():
 			return render_template('disponibilidad_query.html', mensaje="El vehículo está disponible desde el dia " + fecha_inicio + " hasta el día " + fecha_fin)
 		else:
 			return render_template('disponibilidad_query.html', data=data)
+
+
+
+@alquileres.route("/modificar_preguntar", methods=["POST"])
+def modificar_alquiler_preguntar():
+
+	dni_antiguo = request.form.get('dni_antiguo', default='')
+	id_coche_antiguo = request.form.get('id_coche_antiguo', default='')
+	fecha_inicio_antiguo = request.form.get('fecha_inicio_antiguo', default='')
+	fecha_fin_antiguo = request.form.get('fecha_fin_antiguo', default='')
+	precio_antiguo = request.form.get('precio_antiguo', default='')
+	estado_antiguo = request.form.get('estado_antiguo', default='')
+
+	return render_template('alquileres_modificar_query.html', dni_antiguo = dni_antiguo, id_coche_antiguo=id_coche_antiguo, fecha_inicio_antiguo=fecha_inicio_antiguo, fecha_fin_antiguo=fecha_fin_antiguo, precio_antiguo=precio_antiguo, estado_antiguo=estado_antiguo)
+
+@alquileres.route("/modificar_do", methods=["POST"])
+def modificar_alquiler_do():
+
+	dni_antiguo = request.form.get('dni_antiguo', default='')
+	id_coche_antiguo = request.form.get('id_coche_antiguo', default='')
+	fecha_inicio_antiguo = request.form.get('fecha_inicio_antiguo', default='')
+	fecha_fin_antiguo = request.form.get('fecha_fin_antiguo', default='')
+	precio_antiguo = request.form.get('precio_antiguo', default='')
+	estado_antiguo = request.form.get('estado_antiguo', default='')
+
+	id_coche_nuevo = request.form.get('id_coche_nuevo', default='')
+	fecha_inicio_nuevo = request.form.get('fecha_inicio_nuevo', default='')
+	fecha_fin_nuevo = request.form.get('fecha_fin_nuevo', default='')
+	precio_nuevo = request.form.get('precio_nuevo', default='')
+	estado_nuevo = request.form.get('estado_nuevo', default='')
+	
+	parametros = tuple([dni_antiguo, id_coche_nuevo, fecha_inicio_nuevo, fecha_fin_nuevo, precio_nuevo, estado_nuevo, dni_antiguo, id_coche_antiguo, fecha_inicio_antiguo])
+	
+	cur = conn.cursor()
+	query = "UPDATE alquiler SET id_coche=%s, fecha_inicio=%s, fecha_fin=%s, precio=%s, estado=%s where dni=%s and id_coche=%s and fecha_inicio=%s"
+	
+	try:
+		cur.execute(query, ( id_coche_nuevo, fecha_inicio_nuevo, fecha_fin_nuevo, precio_nuevo, estado_nuevo, dni_antiguo, id_coche_antiguo, fecha_inicio_antiguo))
+		conn.commit()
+		cur.close()
+		mensaje = "Datos del alquiler actualizados con éxito"
+		return render_template('alquileres_modificar_query.html', mensaje = mensaje, data_new=parametros)
+	except:
+		cur.close()
+		conn.rollback()
+		if disponibilidad_coche(id_coche_nuevo, fecha_inicio_nuevo, fecha_fin_nuevo) == []:
+			error = "Error: los campos introducidos no son correctos"
+		else:
+			error = "En dicho periodo de alquiler el vehículo no está disponible."
+		return render_template('alquileres_modificar_query.html', data=[], error = error)
 

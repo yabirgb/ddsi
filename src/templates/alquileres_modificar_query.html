@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+	<div class="container-fluid"> 
+
+		<form action="{{ url_for('alquileres.modificar_alquiler_do') }}", method="post">
+
+			<div class="form-group">
+			  <label for="dni">DNI cliente</label>
+			  <input type="text" class="form-control" name="dni_nuevo" value="{{ dni_antiguo }}" disabled>
+			</div>
+
+			<div class="form-group">
+			  <label for="id_coche">Identificador del coche</label>
+			  <input type="text" class="form-control" name="id_coche_nuevo" value="{{ id_coche_antiguo }}">
+			</div>
+
+			<div class="form-group">
+			  <label for="fecha_inicio">Fecha de inicio</label>
+			  <input type="text" class="form-control" name="fecha_inicio_nuevo" value="{{ fecha_inicio_antiguo }}">
+			</div>
+
+			<div class="form-group">
+			  <label for="fecha_fin">Fecha de entrega</label>
+			  <input type="text" class="form-control" name="fecha_fin_nuevo" value="{{ fecha_fin_antiguo }}">
+			</div>
+
+			<div class="form-group">
+			  <label for="precio">Precio</label>
+			  <input type="text" class="form-control" name="precio_nuevo" value="{{ precio_antiguo }}">
+			</div>
+
+			<div class="form-group">
+			  <label for="estado">Estado de pago</label>
+			  <input type="text" class="form-control" name="estado_nuevo" value="{{ estado_antiguo }}">
+			</div>
+
+			<input type="hidden" name="dni_antiguo" value="{{ dni_antiguo }}">
+			<input type="hidden" name="id_coche_antiguo" value="{{ id_coche_antiguo }}">
+			<input type="hidden" name="fecha_inicio_antiguo" value="{{ fecha_inicio_antiguo }}">
+			<input type="hidden" name="fecha_fin_antiguo" value="{{ fecha_fin_antiguo }}">
+			<input type="hidden" name="precio_antiguo" value="{{ precio_antiguo }}">
+			<input type="hidden" name="estado_antiguo" value="{{ estado_antiguo }}">
+			<input type="submit" class="btn btn-primary" name="submit_button" value="Aceptar">
+		</form>
+
+	</div>
+	
+	{% if mensaje %}
+		<div class="container-fluid" style="padding-top: 30px"></div>
+			{{ mensaje }}
+		</div>
+	{% endif %}
+
+	{% if error %}
+		<div class="container-fluid" style="padding-top: 30px"></div>
+			{{ error }}
+		</div>
+	{% elif data_new %}
+		<div class="container-fluid" style="padding-top: 30px">
+		<form id="modificar" action='/alquileres/modificar', method="post"></form>
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">DNI</th>
+						<th scope="col">IDcoche</th>
+						<th scope="col">FechaInicio</th>
+						<th scope="col">FechaFin</th>
+						<th scope="col">Precio (€)</th>
+						<th scope="col">Estado</th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>		  
+					<tr>
+						<td>{{ data_new.0 }}</td>
+						<td>{{ data_new.1 }}</td>
+						<td>{{ data_new.2 }}</td>
+						<td>{{ data_new.3 }}</td>
+						<td>{{ data_new.4 }}</td>
+						<td>{{ data_new.5 }}</td>
+						<td>
+							<form action="{{ url_for('alquileres.modificar_alquiler_preguntar') }}", method="post">
+								<input type="submit" name="submit_button" value="Modificar">
+								<input type="hidden" name="dni_antiguo" value="{{ data_new.0 }}">
+								<input type="hidden" name="id_coche_antiguo" value="{{ data_new.1 }}">
+								<input type="hidden" name="fecha_inicio_antiguo" value="{{ data_new.2 }}">
+								<input type="hidden" name="fecha_fin_antiguo" value="{{ data_new.3 }}">
+								<input type="hidden" name="precio_antiguo" value="{{ data_new.4 }}">
+								<input type="hidden" name="estado_antiguo" value="{{ data_new.5 }}">
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endblock content %}

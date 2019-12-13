@@ -51,6 +51,7 @@
 		</div>
 	{% elif data %}
 		<form id="eliminar" action='/alquileres/eliminar', method="post"></form>
+		<form id="modificar" action='/alquileres/modificar', method="post"></form>
 		<div class="container-fluid" style="padding-top: 30px">
 			<table class="table">
 				<thead>
@@ -81,8 +82,16 @@
 								<input type="hidden" form="eliminar" name="{{ loop.index0 }}_fecha_inicio" value="{{ row.2 }}">
 							</td>
 							<td>
-						 		<a class="btn btn-primary" href="modificar_alquiler/{{ row.0 }}/" role="button">Modificar</a>
-					  		</td>
+								<form action="{{ url_for('alquileres.modificar_alquiler_preguntar') }}", method="post">
+									<input type="submit" name="submit_button" value="Modificar">
+									<input type="hidden" name="dni_antiguo" value="{{ row.0 }}">
+									<input type="hidden" name="id_coche_antiguo" value="{{ row.1 }}">
+									<input type="hidden" name="fecha_inicio_antiguo" value="{{ row.2 }}">
+									<input type="hidden" name="fecha_fin_antiguo" value="{{ row.3 }}">
+									<input type="hidden" name="precio_antiguo" value="{{ row.4 }}">
+									<input type="hidden" name="estado_antiguo" value="{{ row.5 }}">
+								</form>
+							</td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -94,6 +103,7 @@
 
 	{% if data_new %}
 		<div class="container-fluid" style="padding-top: 30px">
+		<form id="modificar" action='/alquileres/modificar', method="post"></form>
 			<table class="table">
 				<thead>
 					<tr>
@@ -106,20 +116,26 @@
 						<th scope="col"></th>
 					</tr>
 				</thead>
-				<tbody>
-					<li class="list-group-item">				  
-						<tr>
-							<td>{{ data_new.0 }}</td>
-							<td>{{ data_new.1 }}</td>
-							<td>{{ data_new.2 }}</td>
-							<td>{{ data_new.3 }}</td>
-							<td>{{ data_new.4 }}</td>
-							<td>{{ data_new.5 }}</td>
-							<td>
-						 		<a class="btn btn-primary" href="modificar_alquiler/{{ data_new.0 }}/" role="button">Modificar</a>
-					  		</td>
-						</tr>
-					</li>
+				<tbody>			  
+					<tr>
+						<td>{{ data_new.0 }}</td>
+						<td>{{ data_new.1 }}</td>
+						<td>{{ data_new.2 }}</td>
+						<td>{{ data_new.3 }}</td>
+						<td>{{ data_new.4 }}</td>
+						<td>{{ data_new.5 }}</td>
+						<td>
+							<form action="{{ url_for('alquileres.modificar_alquiler_preguntar') }}", method="post">
+								<input type="submit" name="submit_button" value="Modificar">
+								<input type="hidden" name="dni_antiguo" value="{{ data_new.0 }}">
+								<input type="hidden" name="id_coche_antiguo" value="{{ data_new.1 }}">
+								<input type="hidden" name="fecha_inicio_antiguo" value="{{ data_new.2 }}">
+								<input type="hidden" name="fecha_fin_antiguo" value="{{ data_new.3 }}">
+								<input type="hidden" name="precio_antiguo" value="{{ data_new.4 }}">
+								<input type="hidden" name="estado_antiguo" value="{{ data_new.5 }}">
+							</form>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
