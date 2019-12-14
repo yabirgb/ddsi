@@ -27,6 +27,7 @@ def consultar_clientes():
             try:
                 cur.execute("Select * from cliente ")          
                 data = cur.fetchall()
+                conn.commit()
                 cur.close()
             except:
                 cur.close()
@@ -57,6 +58,7 @@ def consultar_clientes():
                     try:
                         cur.execute("Select * from cliente where dni=%s or nombre=%s or telefono=%s",(dni,nombre,telefono))
                         data = cur.fetchall()
+                        conn.commit()
                         cur.close()
                     except:
                         cur.close()
@@ -135,6 +137,7 @@ def consultar_alquiler_cliente():
     try:
         cur.execute("select * from alquiler where dni=%s", (dni,))
         data_alquiler = cur.fetchall()
+        conn.commit()
         cur.close()
     except:
         cur.close()
@@ -157,6 +160,7 @@ def consultar_pendientes_cliente():
     try:
         cur.execute("select * from alquiler where dni=%s and estado='no_pagado'", (dni,))
         data_alquiler = cur.fetchall()
+        conn.commit()
         cur.close()
     except:
         cur.close()
