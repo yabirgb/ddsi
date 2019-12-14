@@ -13,6 +13,9 @@ conn = pg.connect(
 coches = Blueprint('coches', __name__,
                         template_folder='../templates', url_prefix="/coches")
 
+
+
+
 @coches.route("/", methods=["GET","POST"])
 def consultar_coche():
 
@@ -74,7 +77,7 @@ def eliminar_coche():
             conn.commit()
             msg = "Coche(s) eliminados con éxito."
     
-#    cur.close()
+    cur.close()
 
     return render_template('coches_query.html', data=[], mensaje=msg)
 
@@ -87,15 +90,15 @@ def eliminar_coche():
 def notificar_averia(id_coche):
 
     if request.method=='GET':
-        return render_template('coches_averia.html', data=[], id_coche=id_coche)
+        return render_template('coches_averia.html', id_coche=id_coche)
 
     if request.form['submit_button'] == 'Guardar nueva avería':
 
         averia = request.form.get('averia', default='', type=str)
         if averia == '':
-            msg = "No se ha introducido ningun avería"
+            msg = "No se ha introducido ninguna avería"
             back = "/coches/"
-            return render_template("error.html", message=msg, back=back)
+            return render_template("error.html", mensaje=msg, back=back)
 
         cur = conn.cursor()
         cur.execute("SELECT estado FROM coche WHERE id_coche=%s", (id_coche,))
@@ -124,20 +127,19 @@ def notificar_averia(id_coche):
 
 
 
-
 @coches.route("/notificar_reparacion/<id_coche>/", methods=['GET','POST'])
 def notificar_reparacion(id_coche):
 
     if request.method=='GET':
-        return render_template('coches_reparacion.html', data=[], id_coche=id_coche)
+        return render_template('coches_reparacion.html', id_coche=id_coche)
 
     if request.form['submit_button'] == 'Eliminar avería':
 
         averia = request.form.get('averia', default='', type=str)
         if averia == '':
-            msg = "No se ha introducido ningun avería"
+            msg = "No se ha introducido ninguna avería"
             back = "/coches/"
-            return render_template("error.html", message=msg, back=back)
+            return render_template("error.html", mensaje=msg, back=back)
 
         cur = conn.cursor()
         cur.execute("SELECT estado FROM coche WHERE id_coche=%s", (id_coche,))
@@ -164,6 +166,70 @@ def notificar_reparacion(id_coche):
 
 
 
+
+
+@coches.route("/asignar_bastidor_matricula/<id_coche>/", methods=['GET','POST'])
+def asignar_bastidor_matricula(id_coche):
+    if request.method=='GET':
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT numero_bastidor, matricula FROM coche WHERE id_coche = %s",
+              (id_coche,))
+        valores_previos = cur.fetchone()
+        cur.close()
+        if valores_previos == (None, None):
+            return render_template('coches_bastidor_matricula.html', id_coche=id_coche)
+        else:
+            msg = "Este coche ya tiene un número de bastidor y una matrícula"
+            back = "/coches/"
+            return render_template("error.html", mensaje=msg, back=back)
+
+    if request.form['submit_button'] == 'Asignar valores':
+        numero_bastidor = request.form.get('numero_bastidor', default='', type=str)
+        matricula = request.form.get('matricula', default='', type=str)
+        if numero_bastidor == '' or matricula == '':
+            msg = "No se ha introducido alguno de los campos requeridos"
+            back = "/coches/"
+            return render_template("error.html", mensaje=msg, back=back)
+        else:
+            cur = conn.cursor()
+            cur.execute(
+                    "SELECT numero_bastidor FROM coche WHERE numero_bastidor=%s",
+                      (numero_bastidor,))
+            bastidor_repetido = cur.fetchone()
+            matricula_repetida = cur.execute(
+                    "SELECT matricula FROM coche WHERE matricula=%s",
+                      (matricula,))
+            matricula_repetida = cur.fetchone()
+            cur.close()
+            if bastidor_repetido != None or matricula_repetida != None:
+                conn.rollback()
+                msg = "El número de bastidor o la matrícula no pueden estar ya registrados"
+                back = "/coches/"
+                return render_template("error.html", mensaje=msg, back=back)
+            else:
+                consulta = "UPDATE coche SET numero_bastidor = %s, matricula = %s WHERE id_coche = %s"
+                cur = conn.cursor()
+                try:
+                    cur.execute(
+                        "UPDATE coche SET numero_bastidor = %s, matricula = %s WHERE id_coche = %s",
+                          (numero_bastidor, matricula, id_coche))
+                    conn.commit()
+                    cur.close()
+                    msg = "Los valores han sido introducidos correctamente"
+                    return render_template('coches_query.html', data=[], mensaje=msg)
+                except:
+                    cur.close()
+                    conn.rollback()
+                    msg = "Error al matricular el coche: formato incorrecto de matrícula."
+                    back = "/coches/"
+                    return render_template("error.html", mensaje=msg, back=back)
+                
+
+
+
+
+
 """
 @coches.route("/crear/", methods=["GET", "POST"])
 def crear_coche():
@@ -180,7 +246,7 @@ def crear_coche():
     if not all([marca, modelo, color]):
         msg = "Alguno de los campos no ha sido introducido correctamente"
         back = "/coches"
-        return render_template("error.html", message=msg, back=back)
+        return render_template("error.html", mensaje=msg, back=back)
 
     # insert in the db
     sql = "INSERT INTO coche(marca, modelo, color) VALUES (%s,%s,%s)"
@@ -194,5 +260,4 @@ def crear_coche():
     return render_template("coches_query.html", success=True)
 """
 
-#método matricular coche?
 
