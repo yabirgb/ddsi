@@ -36,7 +36,7 @@ def consultar_proveedores():
     cur = conn.cursor()
     try:
         cur.execute(
-            "Select * from proveedor where cif=%s or nombre ILIKE %s",
+            "Select * from proveedor where (cif=%s) or %s ILIKE nombre",
     	    (CIF,nombre))
     
         data = cur.fetchall()
@@ -68,13 +68,17 @@ def crear_proveedor():
 
     # insert in the db
 
-
-    sql = "INSERT INTO proveedor(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
-    
-    cur = conn.cursor()
-    cur.execute(sql, (CIF, nombre, ubicacion,telefono,correo))
-    conn.commit()
-    cur.close()
+    try:
+        sql = "INSERT INTO proveedor(cif, nombre, ubicacion, telefono, correo) VALUES (%s,%s,%s,%s,%s)"
+        
+        cur = conn.cursor()
+        cur.execute(sql, (CIF, nombre, ubicacion,telefono,correo))
+        conn.commit()
+        cur.close()
+    except Exception as e:
+        conn.rollback()
+        cur.close()
+        return render_template("proveedores_crear.html", fail=e)
 
     return render_template("proveedores_crear.html", success=True)
     
@@ -219,3 +223,20 @@ def editar_proveedor(cif):
     q['correo'] = data[4]
 
     return render_template("proveedores_editar.html", success="Actualizacion correcta", data = q)   
+
+
+def listar_coches(cif):
+    try:
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM proveedor where cif=%s", (cif, ))
+        
+        data = cur.fetchone()
+        cur.close()
+    except:
+        cur.close()
+        conn.rollback()
+        return render_template("proveedores_editar.html", error="Error en el sistema")
+        
+    if data == None:
+        return render_template("proveedores_editar.html", error="CIF no encontrado")
