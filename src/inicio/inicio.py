@@ -11,6 +11,8 @@ conn = pg.connect(
     host='localhost',
     #port=5432
 )
+conn.autocommit = True
+
 
 inicio = Blueprint('inicio', __name__, template_folder='../templates', url_prefix="")
 
@@ -99,7 +101,6 @@ def insert():
     return True
         
 def drop_db():
-    global conn
     with open('sql/drop.sql','r') as f:
         data = f.read()
         cur = conn.cursor()
@@ -107,7 +108,6 @@ def drop_db():
             cur.execute(data)
             conn.commit()
             cur.close()
-            conn.close()
         except:
             cur.close()
             conn.rollback()

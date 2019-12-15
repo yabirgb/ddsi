@@ -9,6 +9,7 @@ conn = pg.connect(
     host='localhost',
     #port=5432
 )
+conn.autocommit = True
 
 proveedores = Blueprint('proveedores', __name__,
                         template_folder='../templates', url_prefix="/proveedores")

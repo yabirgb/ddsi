@@ -9,6 +9,7 @@ conn = pg.connect(
     host='localhost',
     #port=5432
 )
+conn.autocommit = True
 
 cobrar = Blueprint('cobrar', __name__,
                         template_folder='../templates', url_prefix="/cobrar")
