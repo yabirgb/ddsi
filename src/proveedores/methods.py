@@ -226,7 +226,13 @@ def editar_proveedor(cif):
     return render_template("proveedores_editar.html", success="Actualizacion correcta", data = q)   
 
 
+@proveedores.route("/coches/<cif>", methods=["POST", "GET"])
 def listar_coches(cif):
+
+    # Check that the provider exists
+
+    data = None
+    
     try:
         cur = conn.cursor()
 
@@ -234,10 +240,28 @@ def listar_coches(cif):
         
         data = cur.fetchone()
         cur.close()
-    except:
+    except Exception as e:
         cur.close()
         conn.rollback()
-        return render_template("proveedores_editar.html", error="Error en el sistema")
+        print(e)
+        return render_template("proveedores_listar_coches.html", error="Error en el sistema")
+
+    data=None
+
+    # Search the cars related with the query
+    try:
+        sql = "SELECT * from coche JOIN solicitud ON solicitud.id_coche=coche.id_coche where solicitud.cif=%s and coche.matricula is NULL"
+        cur = conn.cursor()
+        cur.execute(sql, (cif,))
+        data = cur.fetchall()
+        print(data)
+        cur.close()
+    except Exception as e:
+        cur.close()
+        print(e)
+        conn.rollback()
         
     if data == None:
-        return render_template("proveedores_editar.html", error="CIF no encontrado")
+        return render_template("proveedores_listar_coches.html", error="No se han encontrado coches")
+
+    return render_template("proveedores_listar_coches.html", data=data)
