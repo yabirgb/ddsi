@@ -77,6 +77,42 @@ def create_db():
             cur.close()
             conn.rollback()
             return False
+            
+    with open('sql/trigger_alquiler.sql','r') as f:
+        data = f.read()
+        cur = conn.cursor()
+        try:
+            cur.execute(data)
+            conn.commit()
+            cur.close()
+        except:
+            cur.close()
+            conn.rollback()
+            return False
+    
+    with open('sql/trigger_coche.sql','r') as f:
+        data = f.read()
+        cur = conn.cursor()
+        try:
+            cur.execute(data)
+            conn.commit()
+            cur.close()
+        except:
+            cur.close()
+            conn.rollback()
+            return False
+    
+    with open('sql/trigger_proveedor.sql','r') as f:
+        data = f.read()
+        cur = conn.cursor()
+        try:
+            cur.execute(data)
+            conn.commit()
+            cur.close()
+        except:
+            cur.close()
+            conn.rollback()
+            return False
 
     return True
 
