@@ -214,7 +214,7 @@ def cobrar_alquiler_cliente():
     dni_cobrar = request.form.get('dni_cobrar', default='')
     idcoche_cobrar = request.form.get('idcoche_cobrar', default='')
     fecha_cobrar = request.form.get('fecha_cobrar', default='')
-
+    error=''
     cur = conn.cursor()
     try:   
         query = "update alquiler set estado='pagado' where dni=%s and id_coche=%s and fecha_inicio=%s"

@@ -29,8 +29,8 @@ def inicio_f():
             else:
                 mensaje = "Base de datos inicializada con éxito"
             
-            return render_template('index.html', mensaje='')
-            #return render_template('index.html', mensaje=mensaje)
+            #return render_template('index.html', mensaje='')
+            return render_template('index.html', mensaje=mensaje)
         
         elif request.form['submit_button'] == 'Insertar datos de prueba':            
             if not exec_script('sql/insert.sql'):
