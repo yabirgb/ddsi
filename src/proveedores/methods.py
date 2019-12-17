@@ -132,15 +132,19 @@ def solicitar():
         return render_template("solicitar_query.html", err="CIF introducido no se corresponde con un proveedor válido.", campos=campos)
 
 
-    cur.close()
-    cur = conn.cursor()
-    cur.execute("INSERT INTO coche(marca, modelo, color) VALUES (%s, %s, %s) RETURNING id_coche;", (marca, modelo, color))
-    t = cur.fetchone()
-    print(t)
-    id_coche = t[0]
-    cur.execute("INSERT INTO solicitud(id_coche, fecha_entrega, punto_recogida, cif) values(%s, %s, %s, %s)", (id_coche, fecha_entrega, punto_recogida, CIF))
-    conn.commit()
-
+    try:
+        cur.close()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO coche(marca, modelo, color) VALUES (%s, %s, %s) RETURNING id_coche;", (marca, modelo, color))
+        t = cur.fetchone()
+        print(t)
+        id_coche = t[0]
+        cur.execute("INSERT INTO solicitud(id_coche, fecha_entrega, punto_recogida, cif) values(%s, %s, %s, %s)", (id_coche, fecha_entrega, punto_recogida, CIF))
+        conn.commit()
+    except pg.errors.DataException:
+        conn.rollback()
+        return render_template("solicitar_query.html", err="Error de trigger", campos=campos)
+        
     cur.close()
 
     return render_template("solicitar_query.html", campos=campos,success=True, msg="Coche creado correctamente")
