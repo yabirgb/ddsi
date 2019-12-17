@@ -39,11 +39,18 @@ def consultar_alquileres():
 			return render_template('alquileres_query.html', data=[])
 			
 		cur = conn.cursor()
-		cur.execute(consulta,parametros)
-		data = cur.fetchall()
-		cur.close()
-		
-		return render_template('alquileres_query.html', data=data)
+		try:
+			cur.execute(consulta,parametros)
+			data = cur.fetchall()
+			cur.close()
+			
+			return render_template('alquileres_query.html', data=data)
+		except:
+			cur.close()
+			conn.rollback()
+			error = "Error al consultar alquileres: no existen alquileres."
+			
+			return render_template('alquileres_query.html', error=error)
 		
 	elif request.form['submit_button'] == 'Crear alquiler':
 		consulta = "INSERT INTO alquiler(dni,id_coche,fecha_inicio,fecha_fin,precio,estado) VALUES(%s,%s,%s,%s,%s,%s)"
@@ -77,23 +84,30 @@ def consultar_alquileres():
 @alquileres.route("/eliminar", methods=["POST"])
 def eliminar_alquiler():
 
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM alquiler")
-    num_tuplas = cur.fetchall()[0][0]
+	cur = conn.cursor()
+	try:
+		cur.execute("SELECT COUNT(*) FROM alquiler")
+		num_tuplas = cur.fetchall()[0][0]
 
-    msg = "No se ha eliminado ningún alquiler"
-    for i in range(0,num_tuplas):
-        eliminar = request.form.get(str(i), default='')
-        dni = request.form.get(str(i)+'_dni', default='')
-        id_coche = request.form.get(str(i)+'_id_coche', default='')
-        fecha_inicio = request.form.get(str(i)+'_fecha_inicio', default='')
+		msg = "No se ha eliminado ningún alquiler"
+		for i in range(0,num_tuplas):
+		    eliminar = request.form.get(str(i), default='')
+		    dni = request.form.get(str(i)+'_dni', default='')
+		    id_coche = request.form.get(str(i)+'_id_coche', default='')
+		    fecha_inicio = request.form.get(str(i)+'_fecha_inicio', default='')
 
-        if eliminar == 'on':
-            cur.execute("DELETE FROM alquiler WHERE dni=%s and id_coche=%s and fecha_inicio=%s",(dni,id_coche,fecha_inicio))
-            conn.commit()
-            msg = "Alquiler(es) eliminado(s) con éxito."
+		    if eliminar == 'on':
+		        cur.execute("DELETE FROM alquiler WHERE dni=%s and id_coche=%s and fecha_inicio=%s",(dni,id_coche,fecha_inicio))
+		        conn.commit()
+		        msg = "Alquiler(es) eliminado(s) con éxito."
 
-    return render_template('alquileres_query.html', data=[], mensaje=msg)
+		return render_template('alquileres_query.html', data=[], mensaje=msg)
+	except:
+		cur.close()
+		conn.rollback()
+		error = "Error al eliminar alquileres."
+		
+		return render_template('alquileres_query.html', error=error)
 
 def disponibilidad_coche(id_coche, fecha_inicio, fecha_fin):
 		data = []

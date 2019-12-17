@@ -28,11 +28,12 @@ def inicio_f():
                 mensaje = "Ha ocurrido un error al inicializar la base de datos"
             else:
                 mensaje = "Base de datos inicializada con éxito"
-                
+            
+            #return render_template('index.html', mensaje='')
             return render_template('index.html', mensaje=mensaje)
         
         elif request.form['submit_button'] == 'Insertar datos de prueba':            
-            if not insert():
+            if not exec_script('sql/insert.sql'):
                 mensaje = "Ha ocurrido un error al insertar los datos de prueba"
             else:
                 mensaje = "Datos insertados con éxito"
@@ -40,7 +41,7 @@ def inicio_f():
             return render_template('index.html', mensaje=mensaje)
 
         elif request.form['submit_button'] == 'Borrar datos':
-            if not drop_db():
+            if not exec_script('sql/drop.sql'):
                 mensaje = "Ha ocurrido un error al borrar los datos"
             else:
                 mensaje = "Datos eliminados con éxito"
@@ -48,69 +49,29 @@ def inicio_f():
 
 def create_db():
 
-    """
-    Devuelve True si la base de datos se ha creado correctamente
-    """
-    
-    with open('sql/creation.sql','r') as f:
+    resultado = exec_script('sql/creation.sql') 
+    resultado = resultado and exec_script('sql/trigger_cliente.sql')
+    resultado = resultado and exec_script('sql/trigger_alquiler.sql')
+    resultado = resultado and exec_script('sql/trigger_coche.sql')
+    resultado = resultado and exec_script('sql/trigger_proveedor.sql')
+
+    return resultado
+
+
+"""
+Devuelve True si tiene éxito
+"""
+def exec_script(script):
+    with open(script,'r') as f:
         data = f.read()
         cur = conn.cursor()
         try:
             cur.execute(data)
             conn.commit()
             cur.close()
-        except Exception:
-            traceback.print_exc(file=sys.stdout)
-            cur.close()
-            conn.rollback()
-            return False
-
-    
-    with open('sql/trigger_cliente.sql','r') as f:
-        data = f.read()
-        cur = conn.cursor()
-        try:
-            cur.execute(data)
-            conn.commit()
-            cur.close()
-        except:
-            cur.close()
-            conn.rollback()
-            return False
-
-    return True
-
-def insert():
-
-    """
-    Devuelve True si la operacion se realiza con exito
-    """
-    
-    with open('sql/insert.sql','r') as f:
-        data = f.read()
-        cur = conn.cursor()
-        try:
-            cur.execute(data)
-            conn.commit()
-            cur.close()
-        except:
-            cur.close()
-            conn.rollback()
-            return False
-
-    return True
-        
-def drop_db():
-    with open('sql/drop.sql','r') as f:
-        data = f.read()
-        cur = conn.cursor()
-        try:
-            cur.execute(data)
-            conn.commit()
-            cur.close()
+            return True
         except:
             cur.close()
             conn.rollback()
             return False
         
-    return True

@@ -1,5 +1,5 @@
-DROP FUNCTION alquilerValidoInsercion() CASCADE;
-DROP FUNCTION alquilerValidoModificacion() CASCADE;
+--DROP FUNCTION alquilerValidoInsercion() CASCADE;
+--DROP FUNCTION alquilerValidoModificacion() CASCADE;
 
 CREATE OR REPLACE FUNCTION alquilerValidoInsercion() RETURNS trigger AS $$
 DECLARE name   character varying(255);
@@ -30,6 +30,13 @@ BEGIN
 	RETURN NEW;	
 END;
 $$ LANGUAGE plpgsql;
+
+
+DROP TRIGGER IF EXISTS alquilerInsercion
+  ON alquiler;
+
+DROP TRIGGER IF EXISTS alquilerModificacion
+  ON alquiler;
 
 CREATE TRIGGER alquilerInsercion BEFORE INSERT ON alquiler FOR EACH ROW EXECUTE PROCEDURE alquilerValidoInsercion();
 CREATE TRIGGER alquilerModificacion BEFORE UPDATE ON alquiler FOR EACH ROW EXECUTE PROCEDURE alquilerValidoModificacion();

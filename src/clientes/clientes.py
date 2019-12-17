@@ -88,10 +88,15 @@ def consultar_clientes():
                         cur.close()
                         mensaje = "Nuevo cliente creado con éxito."
                         return render_template('clientes_query_clientes.html', data=[], mensaje=mensaje)
-                    except:
+                    except Exception as e:
+                        if e.pgcode == '20808':
+                            error = "Error al crear el nuevo cliente: formato incorrecto de DNI."
+                        elif e.pgcode == '23505':
+                            error = "Error al crear el nuevo cliente: DNI repetido"
+                        else:
+                            error = "Error al crear el nuevo cliente. Código de error: " + e.pgcode
                         cur.close()
                         conn.rollback()
-                        error = "Error al crear el nuevo cliente: formato incorrecto de DNI."
                         return render_template('clientes_query_clientes.html', error=error)
 
 
@@ -214,7 +219,7 @@ def cobrar_alquiler_cliente():
     dni_cobrar = request.form.get('dni_cobrar', default='')
     idcoche_cobrar = request.form.get('idcoche_cobrar', default='')
     fecha_cobrar = request.form.get('fecha_cobrar', default='')
-
+    error=''
     cur = conn.cursor()
     try:   
         query = "update alquiler set estado='pagado' where dni=%s and id_coche=%s and fecha_inicio=%s"
