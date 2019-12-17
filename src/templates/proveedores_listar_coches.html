@@ -24,14 +24,12 @@
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">CIF</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Ubicacion</th>
-            <th scope="col">Telefono</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Fecha de Inicio</th>
-            <th scope="col">Coches solicitados</th>
-            <th scope="col">Acciones</th>
+            <th scope="col">ID de coche</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">CIF proveedor</th>
+            <th scope="col">Fecha de dentrega</th>
+            <th scope="col">Lugar de entrega</th>
           </tr>
         </thead>
         <tbody>
@@ -39,24 +37,13 @@
           <tr>
             <td>{{ loop.index }}</td>
             <td>{{ row.0 }}</td>
-            <td>{{ row.1 }}</td>
-            <td>{{ row.2 }}</td>
             <td>{{ row.3 }}</td>
             <td>{{ row.4 }}</td>
-            <td>{{ row.5 }}</td>
-            <td><a href="/proveedores/coches/{{row.0}}" type="button" class="btn btn-primary">Coches solicitados</a></td>
-            <td>
-			  <div class="row">
-				<div class="col-sm">
-				  <a href="/proveedores/editar/{{row.0}}" type="button" class="btn btn-primary">Editar</a>
-				</div>
-				<div class="col-sm">
-				  <form method="post" action="/proveedores/consulta">
-					<input type="text" name="cif" hidden value="{{row.1}}">
-					<button type="submit" name="submit_button" class="btn btn-danger" value="eliminar-{{row.0}}">Eliminar</button>
-				  </form>
-				</div>
-			</td>
+            <td>{{ row.7 }}</td>
+            <td>{{ row.9 }}</td>
+            <td>{{ row.10 }}</td>
+            <td></td>
+            <td></td>
           </tr>
       {% endfor %}
         </tbody>

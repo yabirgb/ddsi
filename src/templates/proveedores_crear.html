@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
+  {% if fail %}
+    {{fail}}
+  {% endif %}
+
 {% if success %}
   Se han registrado correctamente los datos del nuevo proveedor.
 
